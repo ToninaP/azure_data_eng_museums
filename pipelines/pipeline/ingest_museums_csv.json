@@ -3,7 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Fetch URL data",
+				"name": "Lookup1",
+				"description": "Fetch URL data",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -38,7 +39,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Fetch URL data",
+						"activity": "Lookup1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
