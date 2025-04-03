@@ -1,0 +1,12 @@
+{
+	"name": "all_api_files_raw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_all_apis",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
