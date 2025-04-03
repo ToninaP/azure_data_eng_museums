@@ -48,6 +48,11 @@
         "BaseURL" : "https://raw.githubusercontent.com",
         "RelativeURL" : "whitneymuseum/open-access/refs/heads/main/artworks.csv",
         "FileName" : "whitney_artworks.csv"
+    },
+    {
+        "BaseURL" : "https://www.data.qld.gov.au/dataset/31cb168e-4d6e-4ef6-881c-bc5f0bd8b97f/resource/9fd5697c-8e26-44f6-b8ad-2fef67615253",
+        "RelativeURL" : "download/qagoma-collection-artworks-december-2024.csv",
+        "FileName" : "queensland.csv"
     }
 
 ]

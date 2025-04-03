@@ -1,0 +1,23 @@
+[
+    {
+        "BaseURL" : "https://www.kansallisgalleria.fi/api/v1/objects",
+        "RelativeURL" : "",
+        "FileName" : "kiasma_ateneum_artworks.json"
+    },
+
+    {
+        "BaseURL" : "https://museumcollection.tokyo/works",
+        "RelativeURL" : "?museums[]=mot-art-museum&output=json",
+        "FileName" : "mot_artworks.json"
+    },
+    {
+        "BaseURL" : "https://api.smk.dk/api/v1",
+        "RelativeURL" : "art/search/?keys=*&lang=en",
+        "FileName" : "smk_artworks.json"
+    },
+    {
+        "BaseURL" : "https://api.smk.dk/api/v1",
+        "RelativeURL" : "person/search/?keys=*&lang=en",
+        "FileName" : "smk_artists.json"
+    }
+]
