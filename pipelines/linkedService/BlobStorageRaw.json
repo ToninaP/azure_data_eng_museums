@@ -1,0 +1,11 @@
+{
+	"name": "BlobStorageRaw",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://museumsdatalakeraw.blob.core.windows.net/",
+			"accountKind": "StorageV2"
+		}
+	}
+}

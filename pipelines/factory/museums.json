@@ -1,0 +1,9 @@
+{
+	"name": "museums",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3f41f3d4-ad87-4e45-bf37-d5da2620c354",
+		"tenantId": "4f7d484c-d3d2-428a-9840-6d5d56dd7249"
+	}
+}

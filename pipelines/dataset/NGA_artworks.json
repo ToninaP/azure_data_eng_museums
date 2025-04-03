@@ -1,0 +1,241 @@
+{
+	"name": "NGA_artworks",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "nga_artworks.csv",
+				"folderPath": "open access",
+				"container": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Object Number",
+				"type": "String"
+			},
+			{
+				"name": "Is Highlight",
+				"type": "String"
+			},
+			{
+				"name": "Is Timeline Work",
+				"type": "String"
+			},
+			{
+				"name": "Is Public Domain",
+				"type": "String"
+			},
+			{
+				"name": "Object ID",
+				"type": "String"
+			},
+			{
+				"name": "Gallery Number",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "AccessionYear",
+				"type": "String"
+			},
+			{
+				"name": "Object Name",
+				"type": "String"
+			},
+			{
+				"name": "Title",
+				"type": "String"
+			},
+			{
+				"name": "Culture",
+				"type": "String"
+			},
+			{
+				"name": "Period",
+				"type": "String"
+			},
+			{
+				"name": "Dynasty",
+				"type": "String"
+			},
+			{
+				"name": "Reign",
+				"type": "String"
+			},
+			{
+				"name": "Portfolio",
+				"type": "String"
+			},
+			{
+				"name": "Constituent ID",
+				"type": "String"
+			},
+			{
+				"name": "Artist Role",
+				"type": "String"
+			},
+			{
+				"name": "Artist Prefix",
+				"type": "String"
+			},
+			{
+				"name": "Artist Display Name",
+				"type": "String"
+			},
+			{
+				"name": "Artist Display Bio",
+				"type": "String"
+			},
+			{
+				"name": "Artist Suffix",
+				"type": "String"
+			},
+			{
+				"name": "Artist Alpha Sort",
+				"type": "String"
+			},
+			{
+				"name": "Artist Nationality",
+				"type": "String"
+			},
+			{
+				"name": "Artist Begin Date",
+				"type": "String"
+			},
+			{
+				"name": "Artist End Date",
+				"type": "String"
+			},
+			{
+				"name": "Artist Gender",
+				"type": "String"
+			},
+			{
+				"name": "Artist ULAN URL",
+				"type": "String"
+			},
+			{
+				"name": "Artist Wikidata URL",
+				"type": "String"
+			},
+			{
+				"name": "Object Date",
+				"type": "String"
+			},
+			{
+				"name": "Object Begin Date",
+				"type": "String"
+			},
+			{
+				"name": "Object End Date",
+				"type": "String"
+			},
+			{
+				"name": "Medium",
+				"type": "String"
+			},
+			{
+				"name": "Dimensions",
+				"type": "String"
+			},
+			{
+				"name": "Credit Line",
+				"type": "String"
+			},
+			{
+				"name": "Geography Type",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "State",
+				"type": "String"
+			},
+			{
+				"name": "County",
+				"type": "String"
+			},
+			{
+				"name": "Country",
+				"type": "String"
+			},
+			{
+				"name": "Region",
+				"type": "String"
+			},
+			{
+				"name": "Subregion",
+				"type": "String"
+			},
+			{
+				"name": "Locale",
+				"type": "String"
+			},
+			{
+				"name": "Locus",
+				"type": "String"
+			},
+			{
+				"name": "Excavation",
+				"type": "String"
+			},
+			{
+				"name": "River",
+				"type": "String"
+			},
+			{
+				"name": "Classification",
+				"type": "String"
+			},
+			{
+				"name": "Rights and Reproduction",
+				"type": "String"
+			},
+			{
+				"name": "Link Resource",
+				"type": "String"
+			},
+			{
+				"name": "Object Wikidata URL",
+				"type": "String"
+			},
+			{
+				"name": "Metadata Date",
+				"type": "String"
+			},
+			{
+				"name": "Repository",
+				"type": "String"
+			},
+			{
+				"name": "Tags",
+				"type": "String"
+			},
+			{
+				"name": "Tags AAT URL",
+				"type": "String"
+			},
+			{
+				"name": "Tags Wikidata URL",
+				"type": "String"
+			}
+		]
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "KiasmaDS_API",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_KiasmaAPI",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}

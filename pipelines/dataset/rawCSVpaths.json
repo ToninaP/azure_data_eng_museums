@@ -1,0 +1,32 @@
+{
+	"name": "rawCSVpaths",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "github_csv_file_paths.json",
+				"container": "misc"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"BaseURL": {
+					"type": "string"
+				},
+				"RelativeURL": {
+					"type": "string"
+				},
+				"FileName": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
