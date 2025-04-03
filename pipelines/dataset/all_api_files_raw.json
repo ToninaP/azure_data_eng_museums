@@ -3,10 +3,19 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_all_apis",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"BaseURL": {
+					"value": "@dataset().BaseURL",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"RelativeURL": {
+				"type": "string"
+			},
+			"BaseURL": {
 				"type": "string"
 			}
 		},
