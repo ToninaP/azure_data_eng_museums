@@ -1,0 +1,12 @@
+{
+	"name": "LS_KiasmaAPI",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://www.kansallisgalleria.fi/api/v1/objects",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
