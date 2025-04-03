@@ -1,0 +1,22 @@
+{
+	"name": "NGA_GitHub_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GitHub",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "NationalGalleryOfArt/opendata/refs/heads/main/data/objects.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
