@@ -1,0 +1,328 @@
+{
+	"name": "all_api_files_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": "api",
+				"container": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"objectId": {
+					"type": "integer"
+				},
+				"responsibleOrganisation": {
+					"type": "string"
+				},
+				"dimensions": {
+					"type": "array"
+				},
+				"keywords": {
+					"type": "array"
+				},
+				"materials": {
+					"type": "array"
+				},
+				"category": {
+					"type": "object",
+					"properties": {
+						"categoryId": {
+							"type": "string"
+						},
+						"en": {
+							"type": "string"
+						},
+						"fi": {
+							"type": "string"
+						},
+						"sv": {
+							"type": "string"
+						}
+					}
+				},
+				"classifications": {
+					"type": "array"
+				},
+				"inventoryNumber": {
+					"type": "string"
+				},
+				"people": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "integer"
+							},
+							"firstName": {
+								"type": "string"
+							},
+							"familyName": {
+								"type": "string"
+							},
+							"birthDate": {
+								"type": "string"
+							},
+							"deathDate": {
+								"type": "string"
+							},
+							"birthPlace": {
+								"type": "string"
+							},
+							"deathPlace": {
+								"type": "string"
+							},
+							"birthYear": {
+								"type": "integer"
+							},
+							"deathYear": {
+								"type": "integer"
+							},
+							"attribution": {
+								"type": "null"
+							},
+							"role": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"fi": {
+										"type": "string"
+									},
+									"sv": {
+										"type": "string"
+									},
+									"en": {
+										"type": "string"
+									},
+									"type": {
+										"type": "string"
+									}
+								}
+							},
+							"birthPlace2": {
+								"type": "null"
+							},
+							"birthPlace3": {
+								"type": "null"
+							},
+							"deathPlace2": {
+								"type": "null"
+							},
+							"deathPlace3": {
+								"type": "null"
+							}
+						}
+					}
+				},
+				"multimedia": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "integer"
+							},
+							"license": {
+								"type": "string"
+							},
+							"updated_timestamp": {
+								"type": "string"
+							},
+							"filename_extension": {
+								"type": "string"
+							},
+							"width": {
+								"type": "integer"
+							},
+							"height": {
+								"type": "integer"
+							},
+							"size": {
+								"type": "integer"
+							},
+							"image_version": {
+								"type": "integer"
+							},
+							"isRiaDisplayImage": {
+								"type": "boolean"
+							},
+							"ordinal": {
+								"type": "integer"
+							},
+							"photographer_name": {
+								"type": "string"
+							},
+							"address": {
+								"type": "null"
+							},
+							"filename": {
+								"type": "string"
+							},
+							"jpg": {
+								"type": "object",
+								"properties": {
+									"25": {
+										"type": "string"
+									},
+									"250": {
+										"type": "string"
+									},
+									"500": {
+										"type": "string"
+									},
+									"1000": {
+										"type": "string"
+									},
+									"2000": {
+										"type": "string"
+									},
+									"4000": {
+										"type": "string"
+									}
+								}
+							},
+							"webp": {
+								"type": "object",
+								"properties": {
+									"25": {
+										"type": "string"
+									},
+									"250": {
+										"type": "string"
+									},
+									"500": {
+										"type": "string"
+									},
+									"1000": {
+										"type": "string"
+									},
+									"2000": {
+										"type": "string"
+									},
+									"4000": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"owner": {
+					"type": "string"
+				},
+				"exhibitions": {
+					"type": "array"
+				},
+				"children": {
+					"type": "array"
+				},
+				"parents": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				},
+				"acquisitionDate": {
+					"type": "string"
+				},
+				"title": {
+					"type": "object",
+					"properties": {
+						"en": {
+							"type": "string"
+						},
+						"fi": {
+							"type": "string"
+						},
+						"sv": {
+							"type": "string"
+						}
+					}
+				},
+				"acquisitionMethod": {
+					"type": "object",
+					"properties": {
+						"en": {
+							"type": "string"
+						},
+						"fi": {
+							"type": "string"
+						},
+						"sv": {
+							"type": "string"
+						}
+					}
+				},
+				"acquisitionYear": {
+					"type": "integer"
+				},
+				"yearTo": {
+					"type": "integer"
+				},
+				"yearFrom": {
+					"type": "integer"
+				},
+				"description": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"artworkId": {
+							"type": "integer"
+						},
+						"en": {
+							"type": "string"
+						},
+						"fi": {
+							"type": "string"
+						},
+						"sv": {
+							"type": "string"
+						},
+						"type": {
+							"type": "string"
+						}
+					}
+				},
+				"dateFrom": {
+					"type": "string"
+				},
+				"collection": {
+					"type": "object",
+					"properties": {
+						"fi": {
+							"type": "string"
+						},
+						"en": {
+							"type": "string"
+						},
+						"sv": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	}
+}

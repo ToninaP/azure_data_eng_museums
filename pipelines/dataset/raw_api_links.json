@@ -1,0 +1,19 @@
+{
+	"name": "raw_api_links",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "api_links.json",
+				"container": "misc"
+			}
+		},
+		"schema": {}
+	}
+}
