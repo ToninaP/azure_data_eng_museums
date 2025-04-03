@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "museums"
+		},
+		"GitHub_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
+			"value": "https://museumsdatalakeraw.blob.core.windows.net/"
+		},
+		"museums_csv_properties_typeProperties_url": {
+			"value": "@{linkedService().BaseURL}"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
