@@ -1,0 +1,53 @@
+[
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "NationalGalleryOfArt/opendata/refs/heads/main/data/objects.csv",
+        "FileName" : "nga_artworks.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "NationalGalleryOfArt/opendata/refs/heads/main/data/objects_constituents.csv",
+        "FileName" : "nga_links.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "NationalGalleryOfArt/opendata/refs/heads/main/data/constituents.csv",
+        "FileName" : "nga_artists.csv"
+    },
+    {
+        "BaseURL" : "https://media.githubusercontent.com",
+        "RelativeURL" : "media/metmuseum/openaccess/refs/heads/master/MetObjects.csv",
+        "FileName" : "met_artworks.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "tategallery/collection/refs/heads/master/artwork_data.csv",
+        "FileName" : "tate_artworks.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "tategallery/collection/refs/heads/master/artist_data.csv",
+        "FileName" : "tate_artists.csv"
+    },
+    {
+        "BaseURL" : "https://media.githubusercontent.com",
+        "RelativeURL" : "media/MuseumofModernArt/collection/refs/heads/main/Artists.csv",
+        "FileName" : "moma_artists.csv"
+    },
+    {
+        "BaseURL" : "https://media.githubusercontent.com",
+        "RelativeURL" : "media/MuseumofModernArt/collection/refs/heads/main/Artworks.csv",
+        "FileName" : "moma_artworks.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "whitneymuseum/open-access/refs/heads/main/artists.csv",
+        "FileName" : "whitney_artists.csv"
+    },
+    {
+        "BaseURL" : "https://raw.githubusercontent.com",
+        "RelativeURL" : "whitneymuseum/open-access/refs/heads/main/artworks.csv",
+        "FileName" : "whitney_artworks.csv"
+    }
+
+]
