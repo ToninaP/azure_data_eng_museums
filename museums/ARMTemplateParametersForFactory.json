@@ -5,13 +5,19 @@
 		"factoryName": {
 			"value": "museums"
 		},
-		"GitHub_properties_typeProperties_url": {
-			"value": "https://raw.githubusercontent.com/"
-		},
 		"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 			"value": "https://museumsdatalakeraw.blob.core.windows.net/"
 		},
+		"GitHub_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"LS_KiasmaAPI_properties_typeProperties_url": {
+			"value": "https://www.kansallisgalleria.fi/api/v1/objects"
+		},
 		"museums_csv_properties_typeProperties_url": {
+			"value": "@{linkedService().BaseURL}"
+		},
+		"LS_all_apis_properties_typeProperties_url": {
 			"value": "@{linkedService().BaseURL}"
 		}
 	}

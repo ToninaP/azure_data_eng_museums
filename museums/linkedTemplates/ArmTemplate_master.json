@@ -7,15 +7,23 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "museums"
 		},
-		"GitHub_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
-		},
 		"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
 		},
+		"GitHub_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"LS_KiasmaAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.kansallisgalleria.fi/api/v1/objects"
+		},
 		"museums_csv_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().BaseURL}"
+		},
+		"LS_all_apis_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().BaseURL}"
 		},
@@ -46,14 +54,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"GitHub_properties_typeProperties_url": {
-						"value": "[parameters('GitHub_properties_typeProperties_url')]"
-					},
 					"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('BlobStorageRaw_properties_typeProperties_serviceEndpoint')]"
 					},
+					"GitHub_properties_typeProperties_url": {
+						"value": "[parameters('GitHub_properties_typeProperties_url')]"
+					},
+					"LS_KiasmaAPI_properties_typeProperties_url": {
+						"value": "[parameters('LS_KiasmaAPI_properties_typeProperties_url')]"
+					},
 					"museums_csv_properties_typeProperties_url": {
 						"value": "[parameters('museums_csv_properties_typeProperties_url')]"
+					},
+					"LS_all_apis_properties_typeProperties_url": {
+						"value": "[parameters('LS_all_apis_properties_typeProperties_url')]"
 					}
 				}
 			},

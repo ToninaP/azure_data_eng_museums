@@ -7,15 +7,23 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "museums"
 		},
-		"GitHub_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
-		},
 		"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
 		},
+		"GitHub_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"LS_KiasmaAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.kansallisgalleria.fi/api/v1/objects"
+		},
 		"museums_csv_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().BaseURL}"
+		},
+		"LS_all_apis_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().BaseURL}"
 		}
@@ -169,24 +177,156 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/rawCSVpaths')]",
 				"[concat(variables('factoryId'), '/datasets/all_csv_files_github')]",
-				"[concat(variables('factoryId'), '/datasets/all_csv_files_blob_raw')]",
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
+				"[concat(variables('factoryId'), '/datasets/all_csv_files_blob_raw')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/GitHub')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/ingest_museums_json')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('GitHub_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
+				"activities": [
+					{
+						"name": "get_API_links",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "raw_api_links",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Loop over APIs",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_API_links",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_API_links').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data2",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET"
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "all_api_files_raw",
+											"type": "DatasetReference",
+											"parameters": {
+												"RelativeURL": {
+													"value": "@item().RelativeURL",
+													"type": "Expression"
+												},
+												"BaseURL": {
+													"value": "@item().BaseURL",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "all_api_files_json",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@item().FileName",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/raw_api_links')]",
+				"[concat(variables('factoryId'), '/datasets/all_api_files_raw')]",
+				"[concat(variables('factoryId'), '/datasets/all_api_files_json')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KiasmaDS_API')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_KiasmaAPI",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_KiasmaAPI')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/NGA_GitHub_csv')]",
@@ -205,7 +345,6 @@
 						"relativeUrl": "NationalGalleryOfArt/opendata/refs/heads/main/data/objects.csv"
 					},
 					"columnDelimiter": ",",
-					"rowDelimiter": "\n",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -215,20 +354,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/GitHub')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BlobStorageRaw')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"serviceEndpoint": "[parameters('BlobStorageRaw_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2"
-				}
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/NGA_artworks')]",
@@ -477,27 +602,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/museums_csv')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"BaseURL": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('museums_csv_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/rawCSVpaths')]",
+			"name": "[concat(parameters('factoryName'), '/all_csv_files_blob_raw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -505,29 +610,29 @@
 					"referenceName": "BlobStorageRaw",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
-				"type": "Json",
+				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "github_csv_file_paths.json",
-						"container": "misc"
-					}
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": "open access",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"BaseURL": {
-							"type": "string"
-						},
-						"RelativeURL": {
-							"type": "string"
-						},
-						"FileName": {
-							"type": "string"
-						}
-					}
-				}
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
@@ -578,7 +683,214 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/all_csv_files_blob_raw')]",
+			"name": "[concat(parameters('factoryName'), '/rawCSVpaths')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "github_csv_file_paths.json",
+						"container": "misc"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"BaseURL": {
+							"type": "string"
+						},
+						"RelativeURL": {
+							"type": "string"
+						},
+						"FileName": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobStorageRaw')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('BlobStorageRaw_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GitHub')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('GitHub_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_KiasmaAPI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('LS_KiasmaAPI_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/museums_csv')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"BaseURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('museums_csv_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/kiasma_json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "kiasmaAteneum.json",
+						"folderPath": "api",
+						"container": "raw"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/raw_api_links')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "api_links.json",
+						"container": "misc"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_all_apis')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"BaseURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('LS_all_apis_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/all_api_files_raw')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_all_apis",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"BaseURL": {
+							"value": "@dataset().BaseURL",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"RelativeURL": {
+						"type": "string"
+					},
+					"BaseURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().RelativeURL",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_all_apis')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/all_api_files_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -592,7 +904,7 @@
 					}
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "Json",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
@@ -600,15 +912,311 @@
 							"value": "@dataset().FileName",
 							"type": "Expression"
 						},
-						"folderPath": "open access",
+						"folderPath": "api",
 						"container": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					}
 				},
-				"schema": []
+				"schema": {
+					"type": "object",
+					"properties": {
+						"objectId": {
+							"type": "integer"
+						},
+						"responsibleOrganisation": {
+							"type": "string"
+						},
+						"dimensions": {
+							"type": "array"
+						},
+						"keywords": {
+							"type": "array"
+						},
+						"materials": {
+							"type": "array"
+						},
+						"category": {
+							"type": "object",
+							"properties": {
+								"categoryId": {
+									"type": "string"
+								},
+								"en": {
+									"type": "string"
+								},
+								"fi": {
+									"type": "string"
+								},
+								"sv": {
+									"type": "string"
+								}
+							}
+						},
+						"classifications": {
+							"type": "array"
+						},
+						"inventoryNumber": {
+							"type": "string"
+						},
+						"people": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"familyName": {
+										"type": "string"
+									},
+									"birthDate": {
+										"type": "string"
+									},
+									"deathDate": {
+										"type": "string"
+									},
+									"birthPlace": {
+										"type": "string"
+									},
+									"deathPlace": {
+										"type": "string"
+									},
+									"birthYear": {
+										"type": "integer"
+									},
+									"deathYear": {
+										"type": "integer"
+									},
+									"attribution": {
+										"type": "null"
+									},
+									"role": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "integer"
+											},
+											"fi": {
+												"type": "string"
+											},
+											"sv": {
+												"type": "string"
+											},
+											"en": {
+												"type": "string"
+											},
+											"type": {
+												"type": "string"
+											}
+										}
+									},
+									"birthPlace2": {
+										"type": "null"
+									},
+									"birthPlace3": {
+										"type": "null"
+									},
+									"deathPlace2": {
+										"type": "null"
+									},
+									"deathPlace3": {
+										"type": "null"
+									}
+								}
+							}
+						},
+						"multimedia": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"license": {
+										"type": "string"
+									},
+									"updated_timestamp": {
+										"type": "string"
+									},
+									"filename_extension": {
+										"type": "string"
+									},
+									"width": {
+										"type": "integer"
+									},
+									"height": {
+										"type": "integer"
+									},
+									"size": {
+										"type": "integer"
+									},
+									"image_version": {
+										"type": "integer"
+									},
+									"isRiaDisplayImage": {
+										"type": "boolean"
+									},
+									"ordinal": {
+										"type": "integer"
+									},
+									"photographer_name": {
+										"type": "string"
+									},
+									"address": {
+										"type": "null"
+									},
+									"filename": {
+										"type": "string"
+									},
+									"jpg": {
+										"type": "object",
+										"properties": {
+											"25": {
+												"type": "string"
+											},
+											"250": {
+												"type": "string"
+											},
+											"500": {
+												"type": "string"
+											},
+											"1000": {
+												"type": "string"
+											},
+											"2000": {
+												"type": "string"
+											},
+											"4000": {
+												"type": "string"
+											}
+										}
+									},
+									"webp": {
+										"type": "object",
+										"properties": {
+											"25": {
+												"type": "string"
+											},
+											"250": {
+												"type": "string"
+											},
+											"500": {
+												"type": "string"
+											},
+											"1000": {
+												"type": "string"
+											},
+											"2000": {
+												"type": "string"
+											},
+											"4000": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						},
+						"owner": {
+							"type": "string"
+						},
+						"exhibitions": {
+							"type": "array"
+						},
+						"children": {
+							"type": "array"
+						},
+						"parents": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"acquisitionDate": {
+							"type": "string"
+						},
+						"title": {
+							"type": "object",
+							"properties": {
+								"en": {
+									"type": "string"
+								},
+								"fi": {
+									"type": "string"
+								},
+								"sv": {
+									"type": "string"
+								}
+							}
+						},
+						"acquisitionMethod": {
+							"type": "object",
+							"properties": {
+								"en": {
+									"type": "string"
+								},
+								"fi": {
+									"type": "string"
+								},
+								"sv": {
+									"type": "string"
+								}
+							}
+						},
+						"acquisitionYear": {
+							"type": "integer"
+						},
+						"yearTo": {
+							"type": "integer"
+						},
+						"yearFrom": {
+							"type": "integer"
+						},
+						"description": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "integer"
+								},
+								"artworkId": {
+									"type": "integer"
+								},
+								"en": {
+									"type": "string"
+								},
+								"fi": {
+									"type": "string"
+								},
+								"sv": {
+									"type": "string"
+								},
+								"type": {
+									"type": "string"
+								}
+							}
+						},
+						"dateFrom": {
+							"type": "string"
+						},
+						"collection": {
+							"type": "object",
+							"properties": {
+								"fi": {
+									"type": "string"
+								},
+								"en": {
+									"type": "string"
+								},
+								"sv": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
