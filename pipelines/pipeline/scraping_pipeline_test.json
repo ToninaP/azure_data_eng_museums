@@ -51,6 +51,10 @@
 					"body": {
 						"value": "@activity('Azure Function1').output",
 						"type": "Expression"
+					},
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://storage.azure.com/"
 					}
 				}
 			}
