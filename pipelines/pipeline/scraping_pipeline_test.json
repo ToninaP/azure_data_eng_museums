@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"functionName": "http_trigger",
+					"functionName": "moderna",
 					"method": "GET"
 				},
 				"linkedServiceName": {
