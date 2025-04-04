@@ -5,9 +5,9 @@
 		"annotations": [],
 		"type": "AzureFunction",
 		"typeProperties": {
-			"functionAppUrl": "museums-scraping.azurewebsites.net",
+			"functionAppUrl": "https://museums-scraping.azurewebsites.net",
 			"authentication": "Anonymous",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDg3NTdDQkQ5LUY5QjMtNDBDQy1BM0UzLTE5QUUxQ0VENzJBNV9kNTA5MWVlNy0zMjhkLTQzY2EtOTE2OS05NzU4ZDc0ZTZkYzEiDQp9"
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDg3NTdDQkQ5LUY5QjMtNDBDQy1BM0UzLTE5QUUxQ0VENzJBNV85YWE0ZTBiZC05MmIxLTQ1MzQtYmIwZi0xYjA5MzdiMmQ3YzgiDQp9"
 		}
 	}
 }
