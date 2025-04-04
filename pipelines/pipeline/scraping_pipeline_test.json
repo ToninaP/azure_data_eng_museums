@@ -52,11 +52,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"daar": {
-				"type": "string"
-			}
-		},
 		"annotations": []
 	}
 }
