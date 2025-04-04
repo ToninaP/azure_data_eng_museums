@@ -47,7 +47,7 @@
 					"headers": {
 						"x-ms-blob-type": "BlockBlob"
 					},
-					"url": "https://museumsdatalakeraw.blob.core.windows.net/raw/scraped/",
+					"url": "https://museumsdatalakeraw.blob.core.windows.net/raw/scraped/moderna.json",
 					"body": {
 						"value": "@activity('Azure Function1').output",
 						"type": "Expression"
