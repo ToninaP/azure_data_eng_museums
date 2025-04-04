@@ -22,8 +22,41 @@
 					"referenceName": "AzureFunction1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "saveOutput",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Azure Function1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "PUT",
+					"url": "https://museumsdatalakeraw.blob.core.windows.net/raw/scraped/",
+					"body": {
+						"value": "@activity('Azure Function1').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"daar": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
