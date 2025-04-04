@@ -44,6 +44,9 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "PUT",
+					"headers": {
+						"x-ms-blob-type": "BlockBlob"
+					},
 					"url": "https://museumsdatalakeraw.blob.core.windows.net/raw/scraped/",
 					"body": {
 						"value": "@activity('Azure Function1').output",
