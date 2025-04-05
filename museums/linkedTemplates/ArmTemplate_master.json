@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "museums"
 		},
+		"AzureFunction1_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunction1'"
+		},
+		"AzureFunction1_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://museums-scraping.azurewebsites.net"
+		},
 		"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
@@ -19,11 +27,11 @@
 			"type": "string",
 			"defaultValue": "https://www.kansallisgalleria.fi/api/v1/objects"
 		},
-		"museums_csv_properties_typeProperties_url": {
+		"LS_all_apis_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().BaseURL}"
 		},
-		"LS_all_apis_properties_typeProperties_url": {
+		"museums_csv_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().BaseURL}"
 		},
@@ -54,6 +62,12 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureFunction1_functionKey": {
+						"value": "[parameters('AzureFunction1_functionKey')]"
+					},
+					"AzureFunction1_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('AzureFunction1_properties_typeProperties_functionAppUrl')]"
+					},
 					"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('BlobStorageRaw_properties_typeProperties_serviceEndpoint')]"
 					},
@@ -63,11 +77,11 @@
 					"LS_KiasmaAPI_properties_typeProperties_url": {
 						"value": "[parameters('LS_KiasmaAPI_properties_typeProperties_url')]"
 					},
-					"museums_csv_properties_typeProperties_url": {
-						"value": "[parameters('museums_csv_properties_typeProperties_url')]"
-					},
 					"LS_all_apis_properties_typeProperties_url": {
 						"value": "[parameters('LS_all_apis_properties_typeProperties_url')]"
+					},
+					"museums_csv_properties_typeProperties_url": {
+						"value": "[parameters('museums_csv_properties_typeProperties_url')]"
 					}
 				}
 			},
