@@ -1,0 +1,30 @@
+{
+	"name": "kiasma_raw_to_parquet",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "kiasma_json",
+						"type": "DatasetReference"
+					},
+					"name": "kiasmaRaw"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> kiasmaRaw",
+				"kiasmaRaw filter(ERROR_FUNCTION('')) ~> filter1"
+			]
+		}
+	}
+}
