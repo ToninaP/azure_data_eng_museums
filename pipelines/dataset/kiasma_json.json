@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "kiasmaAteneum.json",
+				"fileName": "kiasma_ateneum_artworks.json",
 				"folderPath": "api",
 				"container": "raw"
 			}
