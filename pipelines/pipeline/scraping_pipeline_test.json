@@ -49,12 +49,17 @@
 					},
 					"url": "https://museumsdatalakeraw.blob.core.windows.net/raw/scraped/moderna.json?sp=racw&st=2025-04-04T23:56:04Z&se=2025-04-05T07:56:04Z&sv=2024-11-04&sr=c&sig=leibeUxieDFVZsOkGpWHQkwV2LwmIe%2FfPVxMfigCs1s%3D",
 					"body": {
-						"value": "@activity('Azure Function1').output",
+						"value": "@activity('Azure Function1').output.Response",
 						"type": "Expression"
 					}
 				}
 			}
 		],
+		"variables": {
+			"Response": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
