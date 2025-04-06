@@ -89,7 +89,6 @@
 				"          objectId,",
 				"          owner,",
 				"          responsibleOrganisation,",
-				"          title,",
 				"          yearFrom,",
 				"          yearTo,",
 				"          people_attribution_id = people.attribution.id,",
@@ -102,7 +101,7 @@
 				"          artist_id = people.id,",
 				"          acqiusition_method = acquisitionMethod.en,",
 				"          category = category.categoryId,",
-				"          measurements = dimensions.measurements",
+				"          title = title.fi",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flatten1"
