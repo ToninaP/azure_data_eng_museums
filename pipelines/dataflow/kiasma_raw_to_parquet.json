@@ -93,7 +93,6 @@
 				"          dimensions,",
 				"          materials,",
 				"          artist_id = people.id,",
-				"          people_attribution_id = people.attribution.id,",
 				"          familyName = people.familyName,",
 				"          firstName = people.firstName,",
 				"          birthDate = people.birthDate,",
