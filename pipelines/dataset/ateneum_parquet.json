@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": "ateneum",
 				"container": "standardized"
 			},
 			"compressionCodec": "snappy"
