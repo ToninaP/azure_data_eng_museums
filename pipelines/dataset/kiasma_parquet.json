@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": "kiasma",
 				"container": "standardized"
 			},
 			"compressionCodec": "snappy"
