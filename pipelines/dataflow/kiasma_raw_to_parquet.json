@@ -16,38 +16,38 @@
 						"referenceName": "kiasma_json",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "kiasmaRawDimensions"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "selectBasicCols"
 				},
 				{
 					"name": "split1"
 				},
 				{
-					"name": "flatten1"
+					"name": "flattenArtist"
 				},
 				{
-					"name": "select2"
+					"name": "selectDimensionsCols"
 				},
 				{
-					"name": "flatten2"
+					"name": "flattenDimensions"
 				},
 				{
-					"name": "window1"
+					"name": "addColForPivot"
 				},
 				{
-					"name": "pivot1"
+					"name": "pivotDimesions"
 				},
 				{
-					"name": "MapDrifted1",
+					"name": "addNewCols",
 					"description": "Creates an explicit mapping for each drifted column"
 				},
 				{
-					"name": "select3"
+					"name": "FilterNewCols"
 				},
 				{
 					"name": "join1"
@@ -114,7 +114,7 @@
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1",
+				"     documentForm: 'documentPerLine') ~> kiasmaRawDimensions",
 				"kiasmaRaw select(mapColumn(",
 				"          acquisitionDate,",
 				"          acquisitionMethod,",
@@ -130,11 +130,11 @@
 				"          yearTo",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> selectBasicCols",
 				"join1 split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
 				"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
 				"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
-				"select1 foldDown(unroll(people),",
+				"selectBasicCols foldDown(unroll(people),",
 				"     mapColumn(",
 				"          objectId,",
 				"          title = title.fi,",
@@ -158,35 +158,35 @@
 				"          deathYear = people.deathYear",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> flatten1",
-				"source1 select(mapColumn(",
+				"     skipDuplicateMapOutputs: false) ~> flattenArtist",
+				"kiasmaRawDimensions select(mapColumn(",
 				"          dimensions,",
 				"          objectId",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 foldDown(unrollMultiple(dimensions,dimensions.measurements),",
+				"     skipDuplicateMapOutputs: true) ~> selectDimensionsCols",
+				"selectDimensionsCols foldDown(unrollMultiple(dimensions,dimensions.measurements),",
 				"     mapColumn(",
 				"          objectId,",
 				"          dimension_unit = dimensions.unit,",
 				"          measurement_value = dimensions.measurements",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> flatten2",
-				"flatten2 window(over(objectId),",
+				"     skipDuplicateMapOutputs: false) ~> flattenDimensions",
+				"flattenDimensions window(over(objectId),",
 				"     desc(measurement_value, true),",
-				"     measurement_n = rowNumber()) ~> window1",
-				"window1 pivot(groupBy(objectId,",
+				"     measurement_n = rowNumber()) ~> addColForPivot",
+				"addColForPivot pivot(groupBy(objectId,",
 				"          dimension_unit),",
 				"     pivotBy(measurement_n),",
 				"     measurement_value = first(measurement_value),",
 				"     columnNaming: '$N$V',",
-				"     lateral: false) ~> pivot1",
-				"pivot1 derive(measurement_value1 = toDouble(byName('measurement_value1')),",
+				"     lateral: false) ~> pivotDimesions",
+				"pivotDimesions derive(measurement_value1 = toDouble(byName('measurement_value1')),",
 				"          measurement_value2 = toDouble(byName('measurement_value2')),",
 				"          measurement_value3 = toDouble(byName('measurement_value3')),",
-				"          measurement_value4 = toDouble(byName('measurement_value4'))) ~> MapDrifted1",
-				"MapDrifted1 select(mapColumn(",
+				"          measurement_value4 = toDouble(byName('measurement_value4'))) ~> addNewCols",
+				"addNewCols select(mapColumn(",
 				"          objectId,",
 				"          dimension_unit,",
 				"          measurement_value1,",
@@ -195,8 +195,8 @@
 				"          measurement_value4",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
-				"flatten1, select3 join(flatten1@objectId == select3@objectId,",
+				"     skipDuplicateMapOutputs: true) ~> FilterNewCols",
+				"flattenArtist, FilterNewCols join(flattenArtist@objectId == FilterNewCols@objectId,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
