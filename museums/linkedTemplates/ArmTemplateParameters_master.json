@@ -26,6 +26,9 @@
 		"museums_csv_properties_typeProperties_url": {
 			"value": "@{linkedService().BaseURL}"
 		},
+		"BlobStorageStandardized_properties_typeProperties_serviceEndpoint": {
+			"value": "https://museumsdatalakeraw.blob.core.windows.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},

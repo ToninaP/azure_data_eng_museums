@@ -1,0 +1,755 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "museums"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_museums_csv')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"description": "Fetch URL data",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "rawCSVpaths",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "loop over URLs",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data from URLs to Blob Storage-raw",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings",
+												"copyBehavior": "PreserveHierarchy"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": false,
+										"dataIntegrationUnits": 4,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "all_csv_files_github",
+											"type": "DatasetReference",
+											"parameters": {
+												"BaseURL": {
+													"value": "@item().BaseURL",
+													"type": "Expression"
+												},
+												"RelativeURL": {
+													"value": "@item().RelativeURL",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "all_csv_files_blob_raw",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@item().FileName",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_museums_json')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_API_links",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "raw_api_links",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Loop over APIs",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_API_links",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_API_links').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data2",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET"
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "all_api_files_raw",
+											"type": "DatasetReference",
+											"parameters": {
+												"RelativeURL": {
+													"value": "@item().RelativeURL",
+													"type": "Expression"
+												},
+												"BaseURL": {
+													"value": "@item().BaseURL",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "all_api_files_json",
+											"type": "DatasetReference",
+											"parameters": {
+												"FileName": {
+													"value": "@item().FileName",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/kiasma_raw_to_parquet')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "kiasma_json",
+								"type": "DatasetReference"
+							},
+							"name": "kiasmaRaw"
+						},
+						{
+							"dataset": {
+								"referenceName": "kiasma_json",
+								"type": "DatasetReference"
+							},
+							"name": "kiasmaRawDimensions"
+						},
+						{
+							"dataset": {
+								"referenceName": "kiasma_json",
+								"type": "DatasetReference"
+							},
+							"name": "kiasmaRawMedium"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ateneum_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Ateneum"
+						},
+						{
+							"dataset": {
+								"referenceName": "kiasma_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "Kiasma"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectBasicCols"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "flattenArtist"
+						},
+						{
+							"name": "selectDimensionsCols"
+						},
+						{
+							"name": "flattenDimensions"
+						},
+						{
+							"name": "addColForPivot"
+						},
+						{
+							"name": "pivotDimesions"
+						},
+						{
+							"name": "addNewCols",
+							"description": "Creates an explicit mapping for each drifted column"
+						},
+						{
+							"name": "FilterNewCols"
+						},
+						{
+							"name": "joinDimensions"
+						},
+						{
+							"name": "selectMedium"
+						},
+						{
+							"name": "flattenMedium"
+						},
+						{
+							"name": "addColforPivot2"
+						},
+						{
+							"name": "pivotMedium"
+						},
+						{
+							"name": "AddMediumCol",
+							"description": "Creates an explicit mapping for each drifted column"
+						},
+						{
+							"name": "joinMedium"
+						},
+						{
+							"name": "acqusitionRaw"
+						},
+						{
+							"name": "productionRaw"
+						},
+						{
+							"name": "artistName"
+						},
+						{
+							"name": "artistBirthRaw"
+						},
+						{
+							"name": "artistDeathRaw"
+						},
+						{
+							"name": "selectRaw"
+						},
+						{
+							"name": "addMuseumName"
+						},
+						{
+							"name": "selectFinal"
+						},
+						{
+							"name": "addMuseumName2"
+						},
+						{
+							"name": "selectFinal2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          acquisitionDate as string,",
+						"          acquisitionMethod as (en as string, fi as string, sv as string),",
+						"          acquisitionYear as short,",
+						"          category as (categoryId as string, en as string, fi as string, sv as string),",
+						"          children as integer[],",
+						"          classifications as (en as string, fi as string, sv as string)[],",
+						"          collection as (en as string, fi as string, sv as string),",
+						"          dateFrom as string,",
+						"          datePrefix as (en as string, fi as string, sv as string),",
+						"          description as (artworkId as integer, en as string, fi as string, id as integer, sv as string, type as string),",
+						"          dimensions as (measureType as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), measurements as double[], sortLnu as short, unit as string)[],",
+						"          exhibitions as (endDate as date, id as integer, location as string, startDate as date, title as string)[],",
+						"          inventoryNumber as string,",
+						"          keywords as (en as string, fi as string, sv as string)[],",
+						"          materials as (en as string, fi as string, sv as string)[],",
+						"          multimedia as (address as (created as string, family_name as string, first_name as string, id as integer, updated as string), filename as string, filename_extension as string, height as short, id as integer, image_version as boolean, isRiaDisplayImage as boolean, jpg as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), license as string, ordinal as integer, photographer_name as string, size as integer, updated_timestamp as string, webp as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), width as short)[],",
+						"          objectId as integer,",
+						"          owner as string,",
+						"          parents as integer[],",
+						"          people as (attribution as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthDate as date, birthPlace as string, birthPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthYear as short, deathDate as date, deathPlace as string, deathPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathYear as short, familyName as string, firstName as string, id as integer, role as (en as string, fi as string, id as integer, sv as string, type as string))[],",
+						"          responsibleOrganisation as string,",
+						"          title as (en as string, fi as string, sv as string),",
+						"          yearFrom as short,",
+						"          yearTo as short",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> kiasmaRaw",
+						"source(output(",
+						"          acquisitionDate as string,",
+						"          acquisitionMethod as (en as string, fi as string, sv as string),",
+						"          acquisitionYear as short,",
+						"          category as (categoryId as string, en as string, fi as string, sv as string),",
+						"          children as integer[],",
+						"          classifications as (en as string, fi as string, sv as string)[],",
+						"          collection as (en as string, fi as string, sv as string),",
+						"          dateFrom as string,",
+						"          datePrefix as (en as string, fi as string, sv as string),",
+						"          description as (artworkId as integer, en as string, fi as string, id as integer, sv as string, type as string),",
+						"          dimensions as (measureType as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), measurements as double[], sortLnu as short, unit as string)[],",
+						"          exhibitions as (endDate as date, id as integer, location as string, startDate as date, title as string)[],",
+						"          inventoryNumber as string,",
+						"          keywords as (en as string, fi as string, sv as string)[],",
+						"          materials as (en as string, fi as string, sv as string)[],",
+						"          multimedia as (address as (created as string, family_name as string, first_name as string, id as integer, updated as string), filename as string, filename_extension as string, height as short, id as integer, image_version as boolean, isRiaDisplayImage as boolean, jpg as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), license as string, ordinal as integer, photographer_name as string, size as integer, updated_timestamp as string, webp as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), width as short)[],",
+						"          objectId as integer,",
+						"          owner as string,",
+						"          parents as integer[],",
+						"          people as (attribution as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthDate as date, birthPlace as string, birthPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthYear as short, deathDate as date, deathPlace as string, deathPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathYear as short, familyName as string, firstName as string, id as integer, role as (en as string, fi as string, id as integer, sv as string, type as string))[],",
+						"          responsibleOrganisation as string,",
+						"          title as (en as string, fi as string, sv as string),",
+						"          yearFrom as short,",
+						"          yearTo as short",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> kiasmaRawDimensions",
+						"source(output(",
+						"          acquisitionDate as string,",
+						"          acquisitionMethod as (en as string, fi as string, sv as string),",
+						"          acquisitionYear as short,",
+						"          category as (categoryId as string, en as string, fi as string, sv as string),",
+						"          children as integer[],",
+						"          classifications as (en as string, fi as string, sv as string)[],",
+						"          collection as (en as string, fi as string, sv as string),",
+						"          dateFrom as string,",
+						"          datePrefix as (en as string, fi as string, sv as string),",
+						"          description as (artworkId as integer, en as string, fi as string, id as integer, sv as string, type as string),",
+						"          dimensions as (measureType as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), measurements as double[], sortLnu as short, unit as string)[],",
+						"          exhibitions as (endDate as date, id as integer, location as string, startDate as date, title as string)[],",
+						"          inventoryNumber as string,",
+						"          keywords as (en as string, fi as string, sv as string)[],",
+						"          materials as (en as string, fi as string, sv as string)[],",
+						"          multimedia as (address as (created as string, family_name as string, first_name as string, id as integer, updated as string), filename as string, filename_extension as string, height as short, id as integer, image_version as boolean, isRiaDisplayImage as boolean, jpg as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), license as string, ordinal as integer, photographer_name as string, size as integer, updated_timestamp as string, webp as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), width as short)[],",
+						"          objectId as integer,",
+						"          owner as string,",
+						"          parents as integer[],",
+						"          people as (attribution as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthDate as date, birthPlace as string, birthPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthYear as short, deathDate as date, deathPlace as string, deathPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathYear as short, familyName as string, firstName as string, id as integer, role as (en as string, fi as string, id as integer, sv as string, type as string))[],",
+						"          responsibleOrganisation as string,",
+						"          title as (en as string, fi as string, sv as string),",
+						"          yearFrom as short,",
+						"          yearTo as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> kiasmaRawMedium",
+						"kiasmaRaw select(mapColumn(",
+						"          acquisitionDate,",
+						"          acquisitionMethod,",
+						"          acquisitionYear,",
+						"          dateFrom,",
+						"          inventoryNumber,",
+						"          objectId,",
+						"          owner,",
+						"          people,",
+						"          responsibleOrganisation,",
+						"          title,",
+						"          yearFrom,",
+						"          yearTo",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectBasicCols",
+						"joinMedium split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
+						"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
+						"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
+						"productionRaw foldDown(unroll(people),",
+						"     mapColumn(",
+						"          objectId,",
+						"          title = title.fi,",
+						"          inventoryNumber,",
+						"          acqiusition_method = acquisitionMethod.en,",
+						"          acquisition_raw,",
+						"          production_raw,",
+						"          responsibleOrganisation,",
+						"          artist_id = people.id,",
+						"          familyName = people.familyName,",
+						"          firstName = people.firstName,",
+						"          birthDate = people.birthDate,",
+						"          birthYear = people.birthYear,",
+						"          deathDate = people.deathDate,",
+						"          deathYear = people.deathYear",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenArtist",
+						"kiasmaRawDimensions select(mapColumn(",
+						"          dimensions,",
+						"          objectId",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectDimensionsCols",
+						"selectDimensionsCols foldDown(unrollMultiple(dimensions,dimensions.measurements),",
+						"     mapColumn(",
+						"          objectId,",
+						"          dimension_unit = dimensions.unit,",
+						"          measurement_value = dimensions.measurements",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenDimensions",
+						"flattenDimensions window(over(objectId),",
+						"     asc(measurement_value, true),",
+						"     measurement_n = rowNumber()) ~> addColForPivot",
+						"addColForPivot pivot(groupBy(objectId,",
+						"          dimension_unit),",
+						"     pivotBy(measurement_n),",
+						"     measurement_value = first(measurement_value),",
+						"     columnNaming: '$N$V',",
+						"     lateral: false) ~> pivotDimesions",
+						"pivotDimesions derive(measurement_value1 = toDouble(byName('measurement_value1')),",
+						"          measurement_value2 = toDouble(byName('measurement_value2')),",
+						"          measurement_value3 = toDouble(byName('measurement_value3')),",
+						"          measurement_value4 = toDouble(byName('measurement_value4'))) ~> addNewCols",
+						"addNewCols select(mapColumn(",
+						"          objectId,",
+						"          dimension_unit,",
+						"          measurement_value1,",
+						"          measurement_value2,",
+						"          measurement_value3,",
+						"          measurement_value4",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> FilterNewCols",
+						"selectRaw, FilterNewCols join(selectRaw@objectId == FilterNewCols@objectId,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinDimensions",
+						"kiasmaRawMedium select(mapColumn(",
+						"          materials,",
+						"          objectId",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectMedium",
+						"selectMedium foldDown(unroll(materials),",
+						"     mapColumn(",
+						"          objectId,",
+						"          medium = materials.en",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenMedium",
+						"flattenMedium window(over(objectId),",
+						"     asc(medium, true),",
+						"     medium_n = rowNumber()) ~> addColforPivot2",
+						"addColforPivot2 pivot(groupBy(objectId),",
+						"     pivotBy(medium_n),",
+						"     medium = first(medium),",
+						"     columnNaming: '$N$V',",
+						"     lateral: false) ~> pivotMedium",
+						"pivotMedium derive(medium1 = toString(byName('medium1')),",
+						"          medium2 = toString(byName('medium2')),",
+						"          medium3 = toString(byName('medium3')),",
+						"          medium4 = toString(byName('medium4')),",
+						"          medium5 = toString(byName('medium5')),",
+						"          medium6 = toString(byName('medium6'))) ~> AddMediumCol",
+						"joinDimensions, AddMediumCol join(selectRaw@objectId == pivotMedium@objectId,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinMedium",
+						"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)",
+						"",
+						") ~> acqusitionRaw",
+						"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
+						"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
+						"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
+						"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw",
+						"artistDeathRaw select(mapColumn(",
+						"          objectId,",
+						"          title,",
+						"          inventoryNumber,",
+						"          production_raw,",
+						"          acqiusition_method,",
+						"          acquisition_raw,",
+						"          responsibleOrganisation,",
+						"          artist_id,",
+						"          Artist_name,",
+						"          artist_birth_raw,",
+						"          artist_death_raw",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRaw",
+						"split1@ateneum derive(Museum_name = \"Ateneum\") ~> addMuseumName",
+						"addMuseumName select(mapColumn(",
+						"          object_id = split1@ateneum@objectId,",
+						"          title,",
+						"          inventoryNumber,",
+						"          production_raw,",
+						"          acquisition_raw,",
+						"          acqiusition_method,",
+						"          artist_id,",
+						"          Artist_name,",
+						"          artist_birth_raw,",
+						"          artist_death_raw,",
+						"          dimension_unit,",
+						"          measurement_value1,",
+						"          measurement_value2,",
+						"          measurement_value3,",
+						"          measurement_value4,",
+						"          medium1,",
+						"          medium2,",
+						"          medium3,",
+						"          medium4,",
+						"          medium5,",
+						"          Museum_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectFinal",
+						"split1@kiasma derive(Museum_name = \"Kiasma\") ~> addMuseumName2",
+						"addMuseumName2 select(mapColumn(",
+						"          object_id = split1@kiasma@objectId,",
+						"          title,",
+						"          inventoryNumber,",
+						"          production_raw,",
+						"          acquisition_raw,",
+						"          acqiusition_method,",
+						"          artist_id,",
+						"          Artist_name,",
+						"          artist_birth_raw,",
+						"          artist_death_raw,",
+						"          dimension_unit,",
+						"          measurement_value1,",
+						"          measurement_value2,",
+						"          measurement_value3,",
+						"          measurement_value4,",
+						"          medium1,",
+						"          medium2,",
+						"          medium3,",
+						"          medium4,",
+						"          medium5,",
+						"          Museum_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectFinal2",
+						"selectFinal sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Ateneum",
+						"selectFinal2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Kiasma"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/raw_transformation_format')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "kiasma_raw_to_parquet",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "kiasma_raw_to_parquet",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"kiasmaRaw": {},
+									"kiasmaRawDimensions": {},
+									"kiasmaRawMedium": {},
+									"Ateneum": {},
+									"Kiasma": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/kiasma_raw_to_parquet')]"
+			]
+		}
+	]
+}
