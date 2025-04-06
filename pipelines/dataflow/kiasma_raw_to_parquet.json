@@ -43,6 +43,10 @@
 					"name": "pivot1"
 				},
 				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
 					"name": "select3"
 				}
 			],
@@ -172,13 +176,23 @@
 				"flatten2 window(over(objectId),",
 				"     desc(measurement_value, true),",
 				"     measurement_n = rowNumber()) ~> window1",
-				"window1 pivot(groupBy(objectId),",
+				"window1 pivot(groupBy(objectId,",
+				"          dimension_unit),",
 				"     pivotBy(measurement_n),",
 				"     measurement_value = first(measurement_value),",
 				"     columnNaming: '$N$V',",
 				"     lateral: false) ~> pivot1",
-				"pivot1 select(mapColumn(",
-				"          objectId",
+				"pivot1 derive(measurement_value1 = toDouble(byName('measurement_value1')),",
+				"          measurement_value2 = toDouble(byName('measurement_value2')),",
+				"          measurement_value3 = toDouble(byName('measurement_value3')),",
+				"          measurement_value4 = toDouble(byName('measurement_value4'))) ~> MapDrifted1",
+				"MapDrifted1 select(mapColumn(",
+				"          objectId,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          measurement_value2,",
+				"          measurement_value3,",
+				"          measurement_value4",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3"
