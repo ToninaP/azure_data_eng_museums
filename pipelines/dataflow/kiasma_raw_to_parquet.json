@@ -26,7 +26,22 @@
 					"name": "kiasmaRawMedium"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ateneum_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "Ateneum"
+				},
+				{
+					"dataset": {
+						"referenceName": "kiasma_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "Kiasma"
+				}
+			],
 			"transformations": [
 				{
 					"name": "selectBasicCols"
@@ -92,6 +107,21 @@
 				},
 				{
 					"name": "artistDeathRaw"
+				},
+				{
+					"name": "selectRaw"
+				},
+				{
+					"name": "addMuseumName"
+				},
+				{
+					"name": "selectFinal"
+				},
+				{
+					"name": "addMuseumName2"
+				},
+				{
+					"name": "selectFinal2"
 				}
 			],
 			"scriptLines": [
@@ -211,9 +241,6 @@
 				"          inventoryNumber,",
 				"          acqiusition_method = acquisitionMethod.en,",
 				"          acquisition_raw,",
-				"          dateFrom,",
-				"          yearFrom,",
-				"          yearTo,",
 				"          production_raw,",
 				"          responsibleOrganisation,",
 				"          artist_id = people.id,",
@@ -263,7 +290,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> FilterNewCols",
-				"artistDeathRaw, FilterNewCols join(flattenArtist@objectId == FilterNewCols@objectId,",
+				"selectRaw, FilterNewCols join(selectRaw@objectId == FilterNewCols@objectId,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -295,7 +322,7 @@
 				"          medium4 = toString(byName('medium4')),",
 				"          medium5 = toString(byName('medium5')),",
 				"          medium6 = toString(byName('medium6'))) ~> AddMediumCol",
-				"joinDimensions, AddMediumCol join(flattenArtist@objectId == pivotMedium@objectId,",
+				"joinDimensions, AddMediumCol join(selectRaw@objectId == pivotMedium@objectId,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -306,7 +333,84 @@
 				"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
 				"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
 				"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
-				"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw"
+				"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw",
+				"artistDeathRaw select(mapColumn(",
+				"          objectId,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acqiusition_method,",
+				"          acquisition_raw,",
+				"          responsibleOrganisation,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRaw",
+				"split1@ateneum derive(Museum_name = \"Ateneum\") ~> addMuseumName",
+				"addMuseumName select(mapColumn(",
+				"          object_id = split1@ateneum@objectId,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acquisition_raw,",
+				"          acqiusition_method,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          measurement_value2,",
+				"          measurement_value3,",
+				"          measurement_value4,",
+				"          medium1,",
+				"          medium2,",
+				"          medium3,",
+				"          medium4,",
+				"          medium5,",
+				"          Museum_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectFinal",
+				"split1@kiasma derive(Museum_name = \"Kiasma\") ~> addMuseumName2",
+				"addMuseumName2 select(mapColumn(",
+				"          object_id = split1@kiasma@objectId,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acquisition_raw,",
+				"          acqiusition_method,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          measurement_value2,",
+				"          measurement_value3,",
+				"          measurement_value4,",
+				"          medium1,",
+				"          medium2,",
+				"          medium3,",
+				"          medium4,",
+				"          medium5,",
+				"          Museum_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectFinal2",
+				"selectFinal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Ateneum",
+				"selectFinal2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Kiasma"
 			]
 		}
 	}
