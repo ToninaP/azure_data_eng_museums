@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "kiasmaRaw"
+				},
+				{
+					"dataset": {
+						"referenceName": "kiasma_json",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
 				}
 			],
 			"sinks": [],
@@ -56,6 +63,10 @@
 				"     limit: 100,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'documentPerLine') ~> kiasmaRaw",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> source1",
 				"kiasmaRaw select(mapColumn(",
 				"          acquisitionDate,",
 				"          acquisitionMethod,",
@@ -90,8 +101,9 @@
 				"          yearFrom,",
 				"          yearTo,",
 				"          responsibleOrganisation,",
-				"          dimensions,",
-				"          materials,",
+				"          dimensions_unit = dimensions.unit,",
+				"          measurements = dimensions.measurements,",
+				"          medium_en = materials.en,",
 				"          artist_id = people.id,",
 				"          familyName = people.familyName,",
 				"          firstName = people.firstName,",
