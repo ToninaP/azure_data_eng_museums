@@ -50,7 +50,7 @@
 					"name": "select3"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "join1"
 				}
 			],
 			"scriptLines": [
@@ -119,11 +119,8 @@
 				"          acquisitionDate,",
 				"          acquisitionMethod,",
 				"          acquisitionYear,",
-				"          category,",
 				"          dateFrom,",
-				"          dimensions,",
 				"          inventoryNumber,",
-				"          materials,",
 				"          objectId,",
 				"          owner,",
 				"          people,",
@@ -134,7 +131,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"flatten1 split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
+				"join1 split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
 				"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
 				"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
 				"select1 foldDown(unroll(people),",
@@ -199,9 +196,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select3 keyGenerate(output(objectId as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey1"
+				"flatten1, select3 join(flatten1@objectId == select3@objectId,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
 			]
 		}
 	}
