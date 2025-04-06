@@ -17,6 +17,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "kiasmaRawDimensions"
+				},
+				{
+					"dataset": {
+						"referenceName": "kiasma_json",
+						"type": "DatasetReference"
+					},
+					"name": "kiasmaRawMedium"
 				}
 			],
 			"sinks": [],
@@ -51,6 +58,15 @@
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "selectMedium"
+				},
+				{
+					"name": "flattenMedium"
+				},
+				{
+					"name": "addColforPivot2"
 				}
 			],
 			"scriptLines": [
@@ -82,7 +98,6 @@
 				"     ),",
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
-				"     limit: 100,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'documentPerLine') ~> kiasmaRaw",
 				"source(output(",
@@ -115,6 +130,36 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'documentPerLine') ~> kiasmaRawDimensions",
+				"source(output(",
+				"          acquisitionDate as string,",
+				"          acquisitionMethod as (en as string, fi as string, sv as string),",
+				"          acquisitionYear as short,",
+				"          category as (categoryId as string, en as string, fi as string, sv as string),",
+				"          children as integer[],",
+				"          classifications as (en as string, fi as string, sv as string)[],",
+				"          collection as (en as string, fi as string, sv as string),",
+				"          dateFrom as string,",
+				"          datePrefix as (en as string, fi as string, sv as string),",
+				"          description as (artworkId as integer, en as string, fi as string, id as integer, sv as string, type as string),",
+				"          dimensions as (measureType as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), measurements as double[], sortLnu as short, unit as string)[],",
+				"          exhibitions as (endDate as date, id as integer, location as string, startDate as date, title as string)[],",
+				"          inventoryNumber as string,",
+				"          keywords as (en as string, fi as string, sv as string)[],",
+				"          materials as (en as string, fi as string, sv as string)[],",
+				"          multimedia as (address as (created as string, family_name as string, first_name as string, id as integer, updated as string), filename as string, filename_extension as string, height as short, id as integer, image_version as boolean, isRiaDisplayImage as boolean, jpg as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), license as string, ordinal as integer, photographer_name as string, size as integer, updated_timestamp as string, webp as ({1000} as string, {2000} as string, {25} as string, {250} as string, {4000} as string, {500} as string), width as short)[],",
+				"          objectId as integer,",
+				"          owner as string,",
+				"          parents as integer[],",
+				"          people as (attribution as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthDate as date, birthPlace as string, birthPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), birthYear as short, deathDate as date, deathPlace as string, deathPlace2 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathPlace3 as (en as string, fi as string, id as integer, sv as string, type as string, updated as string), deathYear as short, familyName as string, firstName as string, id as integer, role as (en as string, fi as string, id as integer, sv as string, type as string))[],",
+				"          responsibleOrganisation as string,",
+				"          title as (en as string, fi as string, sv as string),",
+				"          yearFrom as short,",
+				"          yearTo as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> kiasmaRawMedium",
 				"kiasmaRaw select(mapColumn(",
 				"          acquisitionDate,",
 				"          acquisitionMethod,",
@@ -174,7 +219,7 @@
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flattenDimensions",
 				"flattenDimensions window(over(objectId),",
-				"     desc(measurement_value, true),",
+				"     asc(measurement_value, true),",
 				"     measurement_n = rowNumber()) ~> addColForPivot",
 				"addColForPivot pivot(groupBy(objectId,",
 				"          dimension_unit),",
@@ -200,7 +245,23 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"kiasmaRawMedium select(mapColumn(",
+				"          materials,",
+				"          objectId",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectMedium",
+				"selectMedium foldDown(unroll(materials),",
+				"     mapColumn(",
+				"          objectId,",
+				"          medium = materials.en",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenMedium",
+				"flattenMedium window(over(objectId),",
+				"     asc(medium, true),",
+				"     medium_n = rowNumber()) ~> addColforPivot2"
 			]
 		}
 	}
