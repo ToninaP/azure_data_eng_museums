@@ -67,6 +67,9 @@
 				},
 				{
 					"name": "addColforPivot2"
+				},
+				{
+					"name": "pivotMedium"
 				}
 			],
 			"scriptLines": [
@@ -261,7 +264,12 @@
 				"     skipDuplicateMapOutputs: false) ~> flattenMedium",
 				"flattenMedium window(over(objectId),",
 				"     asc(medium, true),",
-				"     medium_n = rowNumber()) ~> addColforPivot2"
+				"     medium_n = rowNumber()) ~> addColforPivot2",
+				"addColforPivot2 pivot(groupBy(objectId),",
+				"     pivotBy(medium_n),",
+				"     medium = first(medium),",
+				"     columnNaming: '$N$V',",
+				"     lateral: false) ~> pivotMedium"
 			]
 		}
 	}
