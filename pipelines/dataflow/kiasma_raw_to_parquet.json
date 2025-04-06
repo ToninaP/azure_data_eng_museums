@@ -57,7 +57,7 @@
 					"name": "FilterNewCols"
 				},
 				{
-					"name": "join1"
+					"name": "joinDimensions"
 				},
 				{
 					"name": "selectMedium"
@@ -70,6 +70,28 @@
 				},
 				{
 					"name": "pivotMedium"
+				},
+				{
+					"name": "AddMediumCol",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "joinMedium"
+				},
+				{
+					"name": "acqusitionRaw"
+				},
+				{
+					"name": "productionRaw"
+				},
+				{
+					"name": "artistName"
+				},
+				{
+					"name": "artistBirthRaw"
+				},
+				{
+					"name": "artistDeathRaw"
 				}
 			],
 			"scriptLines": [
@@ -179,24 +201,21 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectBasicCols",
-				"join1 split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
+				"joinMedium split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
 				"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
 				"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
-				"selectBasicCols foldDown(unroll(people),",
+				"productionRaw foldDown(unroll(people),",
 				"     mapColumn(",
 				"          objectId,",
 				"          title = title.fi,",
 				"          inventoryNumber,",
 				"          acqiusition_method = acquisitionMethod.en,",
-				"          acquisitionDate,",
-				"          acquisitionYear,",
+				"          acquisition_raw,",
 				"          dateFrom,",
 				"          yearFrom,",
 				"          yearTo,",
+				"          production_raw,",
 				"          responsibleOrganisation,",
-				"          dimensions_unit = dimensions.unit,",
-				"          measurements = dimensions.measurements,",
-				"          medium_en = materials.en,",
 				"          artist_id = people.id,",
 				"          familyName = people.familyName,",
 				"          firstName = people.firstName,",
@@ -244,11 +263,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> FilterNewCols",
-				"flattenArtist, FilterNewCols join(flattenArtist@objectId == FilterNewCols@objectId,",
+				"artistDeathRaw, FilterNewCols join(flattenArtist@objectId == FilterNewCols@objectId,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
+				"     broadcast: 'auto')~> joinDimensions",
 				"kiasmaRawMedium select(mapColumn(",
 				"          materials,",
 				"          objectId",
@@ -269,7 +288,25 @@
 				"     pivotBy(medium_n),",
 				"     medium = first(medium),",
 				"     columnNaming: '$N$V',",
-				"     lateral: false) ~> pivotMedium"
+				"     lateral: false) ~> pivotMedium",
+				"pivotMedium derive(medium1 = toString(byName('medium1')),",
+				"          medium2 = toString(byName('medium2')),",
+				"          medium3 = toString(byName('medium3')),",
+				"          medium4 = toString(byName('medium4')),",
+				"          medium5 = toString(byName('medium5')),",
+				"          medium6 = toString(byName('medium6'))) ~> AddMediumCol",
+				"joinDimensions, AddMediumCol join(flattenArtist@objectId == pivotMedium@objectId,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMedium",
+				"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)",
+				"",
+				") ~> acqusitionRaw",
+				"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
+				"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
+				"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
+				"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw"
 			]
 		}
 	}
