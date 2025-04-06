@@ -1827,6 +1827,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"folderPath": "ateneum",
 						"container": "standardized"
 					},
 					"compressionCodec": "snappy"
@@ -1851,6 +1852,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"folderPath": "kiasma",
 						"container": "standardized"
 					},
 					"compressionCodec": "snappy"
