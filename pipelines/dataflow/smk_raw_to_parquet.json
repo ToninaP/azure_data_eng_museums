@@ -19,6 +19,25 @@
 				},
 				{
 					"name": "flatten2"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "pivot1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -56,7 +75,41 @@
 				"          gender",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> flatten2"
+				"     skipDuplicateMapOutputs: false) ~> flatten2",
+				"flatten2 window(over(artist_id),",
+				"     asc(gender, true),",
+				"     gender_lang = rowNumber()) ~> window1",
+				"window1 pivot(groupBy(artist_id,",
+				"          birth_date_end,",
+				"          birth_date_start,",
+				"          death_date_end,",
+				"          death_date_start),",
+				"     pivotBy(gender_lang),",
+				"     {} = first(gender),",
+				"     columnNaming: '$N$V',",
+				"     lateral: false) ~> pivot1",
+				"derivedColumn2 select(mapColumn(",
+				"          artist_id,",
+				"          gender = {5},",
+				"          artist_birth_raw,",
+				"          artist_death_raw",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"pivot1 derive({1} = toString(byName('1')),",
+				"          {2} = toString(byName('2')),",
+				"          {3} = toString(byName('3')),",
+				"          {4} = toString(byName('4')),",
+				"          {5} = toString(byName('5')),",
+				"          {6} = toString(byName('6')),",
+				"          {7} = toString(byName('7')),",
+				"          {8} = toString(byName('8')),",
+				"          {9} = toString(byName('9'))) ~> MapDrifted1",
+				"MapDrifted1 derive(artist_birth_raw = toDate(coalesce(birth_date_start, birth_date_end), 'yyyy-MM-dd')",
+				"",
+				"",
+				") ~> derivedColumn1",
+				"derivedColumn1 derive(artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> derivedColumn2"
 			]
 		}
 	}
