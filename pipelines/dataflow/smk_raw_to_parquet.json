@@ -13,7 +13,14 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "flatten2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          offset as integer,",
@@ -27,7 +34,29 @@
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1"
+				"     documentForm: 'documentPerLine') ~> source1",
+				"source1 foldDown(unroll(items),",
+				"     mapColumn(",
+				"          artist_id = items.id,",
+				"          birth_date_end = items.birth_date_end,",
+				"          birth_date_start = items.birth_date_start,",
+				"          death_date_end = items.death_date_end,",
+				"          death_date_start = items.death_date_start,",
+				"          gender = items.gender",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 foldDown(unrollMultiple(birth_date_end,birth_date_start,death_date_end,death_date_start,gender),",
+				"     mapColumn(",
+				"          artist_id,",
+				"          birth_date_end,",
+				"          birth_date_start,",
+				"          death_date_end,",
+				"          death_date_start,",
+				"          gender",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten2"
 			]
 		}
 	}
