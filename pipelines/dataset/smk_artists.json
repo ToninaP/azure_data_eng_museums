@@ -1,0 +1,101 @@
+{
+	"name": "smk_artists",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "smk_artists.json",
+				"folderPath": "api",
+				"container": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"offset": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "integer"
+				},
+				"found": {
+					"type": "integer"
+				},
+				"items": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"created": {
+								"type": "string"
+							},
+							"modified": {
+								"type": "string"
+							},
+							"works": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"birth_date_end": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"birth_date_start": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"death_date_end": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"death_date_start": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"gender": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"name_type": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"facets": {
+					"type": "object"
+				},
+				"facets_ranges": {
+					"type": "object"
+				},
+				"autocomplete": {
+					"type": "array"
+				}
+			}
+		}
+	}
+}
