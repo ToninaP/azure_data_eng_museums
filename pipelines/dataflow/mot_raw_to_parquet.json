@@ -1,0 +1,47 @@
+{
+	"name": "mot_raw_to_parquet",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "mot_json",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {1context} as (dct as string, schema as string, xsd as string, rdf as string, rdfs as string),",
+				"          {1graph} as ({1type} as string, {1id} as string, {schema:identifier} as ({1type} as string, {schema:name} as string, {schema:value} as string)[], {schema:genre} as ({1id} as string, {skos:preflabel} as ({1value} as string, {1lang} as string))[], {schema:name} as ({1value} as string, {1lang} as string)[], {schema:creator} as ({1type} as string, {schema:name} as ({1value} as string, {1lang} as string)[]), {schema:dateCreated} as string, {schema:material} as ({1value} as string, {1lang} as string)[], {schema:isPartOf} as ({1type} as string, {schema:maintainer} as ({1type} as string, {schema:name} as ({1value} as string, {1lang} as string)[])[])[], {dct:provenance} as ({1value} as string, {1lang} as string)[])[]",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> source1",
+				"select1 foldDown(unroll(@graph),",
+				"     mapColumn(",
+				"          type = {@graph}.{@type}",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"source1 select(mapColumn(",
+				"          {@graph}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
+			]
+		}
+	}
+}

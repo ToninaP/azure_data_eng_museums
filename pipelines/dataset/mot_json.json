@@ -1,0 +1,200 @@
+{
+	"name": "mot_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "mot_artworks.json",
+				"folderPath": "api",
+				"container": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"1context": {
+					"type": "object",
+					"properties": {
+						"dct": {
+							"type": "string"
+						},
+						"schema": {
+							"type": "string"
+						},
+						"xsd": {
+							"type": "string"
+						},
+						"rdf": {
+							"type": "string"
+						},
+						"rdfs": {
+							"type": "string"
+						}
+					}
+				},
+				"1graph": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"1type": {
+								"type": "string"
+							},
+							"1id": {
+								"type": "string"
+							},
+							"schema:identifier": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1type": {
+											"type": "string"
+										},
+										"schema:name": {
+											"type": "string"
+										},
+										"schema:value": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"schema:genre": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1id": {
+											"type": "string"
+										},
+										"skos:preflabel": {
+											"type": "object",
+											"properties": {
+												"1value": {
+													"type": "string"
+												},
+												"1lang": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							},
+							"schema:name": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1value": {
+											"type": "string"
+										},
+										"1lang": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"schema:creator": {
+								"type": "object",
+								"properties": {
+									"1type": {
+										"type": "string"
+									},
+									"schema:name": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1value": {
+													"type": "string"
+												},
+												"1lang": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							},
+							"schema:dateCreated": {
+								"type": "string"
+							},
+							"schema:material": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1value": {
+											"type": "string"
+										},
+										"1lang": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"schema:isPartOf": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1type": {
+											"type": "string"
+										},
+										"schema:maintainer": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"1type": {
+														"type": "string"
+													},
+													"schema:name": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"1value": {
+																	"type": "string"
+																},
+																"1lang": {
+																	"type": "string"
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"dct:provenance": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"1value": {
+											"type": "string"
+										},
+										"1lang": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
