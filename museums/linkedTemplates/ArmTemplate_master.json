@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
 		},
+		"BlobStorageStandardized_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
+		},
 		"GitHub_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
@@ -34,10 +38,6 @@
 		"museums_csv_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().BaseURL}"
-		},
-		"BlobStorageStandardized_properties_typeProperties_serviceEndpoint": {
-			"type": "string",
-			"defaultValue": "https://museumsdatalakeraw.blob.core.windows.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -75,6 +75,9 @@
 					"BlobStorageRaw_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('BlobStorageRaw_properties_typeProperties_serviceEndpoint')]"
 					},
+					"BlobStorageStandardized_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('BlobStorageStandardized_properties_typeProperties_serviceEndpoint')]"
+					},
 					"GitHub_properties_typeProperties_url": {
 						"value": "[parameters('GitHub_properties_typeProperties_url')]"
 					},
@@ -86,9 +89,6 @@
 					},
 					"museums_csv_properties_typeProperties_url": {
 						"value": "[parameters('museums_csv_properties_typeProperties_url')]"
-					},
-					"BlobStorageStandardized_properties_typeProperties_serviceEndpoint": {
-						"value": "[parameters('BlobStorageStandardized_properties_typeProperties_serviceEndpoint')]"
 					}
 				}
 			},

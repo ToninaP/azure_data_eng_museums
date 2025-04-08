@@ -13,6 +13,28 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/raw_api_links')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "api_links.json",
+						"container": "misc"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ingest_museums_csv')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -280,7 +302,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/raw_api_links')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/kiasma_raw_to_parquet')]",
@@ -613,9 +637,7 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> joinMedium",
-						"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)",
-						"",
-						") ~> acqusitionRaw",
+						"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)) ~> acqusitionRaw",
 						"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
 						"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
 						"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
