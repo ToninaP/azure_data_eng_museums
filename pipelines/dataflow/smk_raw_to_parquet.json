@@ -9,7 +9,21 @@
 						"referenceName": "smk_artists",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "artists"
+				},
+				{
+					"dataset": {
+						"referenceName": "smk_artworks",
+						"type": "DatasetReference"
+					},
+					"name": "artworks"
+				},
+				{
+					"dataset": {
+						"referenceName": "smk_artworks",
+						"type": "DatasetReference"
+					},
+					"name": "artworksDimensions"
 				}
 			],
 			"sinks": [],
@@ -38,6 +52,18 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "flatten3"
+				},
+				{
+					"name": "flattenDimensions"
+				},
+				{
+					"name": "pivotDimensions"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -53,8 +79,34 @@
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1",
-				"source1 foldDown(unroll(items),",
+				"     documentForm: 'documentPerLine') ~> artists",
+				"source(output(",
+				"          offset as integer,",
+				"          rows as integer,",
+				"          found as integer,",
+				"          items as (id as string, created as string, modified as string, acquisition_date as string, acquisition_date_precision as string, dimensions as (part as string, type as string, unit as string, value as string)[], documentation as (title as string, author as string, notes as string, shelfmark as string, year_of_publication as string)[], object_names as (name as string)[], production as (creator as string, creator_forename as string, creator_surname as string, creator_date_of_birth as string, creator_date_of_death as string, creator_nationality as string, creator_gender as string, creator_lref as string)[], production_date as (start as string, end as string, period as string)[], techniques as string[], object_number as string, object_url as string, frontend_url as string, iiif_manifest as string, enrichment_url as string, similar_images_url as string, production_dates_notes as string[], public_domain as boolean, rights as string, on_display as boolean, image_mime_type as string, image_iiif_id as string, image_iiif_info as string, image_width as integer, image_height as integer, image_size as integer, image_thumbnail as string, image_native as string, image_cropped as boolean, image_orientation as string, image_hq as boolean, has_3d_file as boolean, has_image as boolean, colors as string[], suggested_bg_color as string[], entropy as double, contrast as double, saturation as double, colortemp as double, brightness as double, titles as (title as string, type as string, language as string)[], artist as string[])[],",
+				"          facets as ({} as string),",
+				"          facets_ranges as ({} as string),",
+				"          autocomplete as string[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> artworks",
+				"source(output(",
+				"          offset as integer,",
+				"          rows as integer,",
+				"          found as integer,",
+				"          items as (id as string, created as string, modified as string, acquisition_date as string, acquisition_date_precision as string, dimensions as (part as string, type as string, unit as string, value as string)[], documentation as (title as string, author as string, notes as string, shelfmark as string, year_of_publication as string)[], object_names as (name as string)[], production as (creator as string, creator_forename as string, creator_surname as string, creator_date_of_birth as string, creator_date_of_death as string, creator_nationality as string, creator_gender as string, creator_lref as string)[], production_date as (start as string, end as string, period as string)[], techniques as string[], object_number as string, object_url as string, frontend_url as string, iiif_manifest as string, enrichment_url as string, similar_images_url as string, production_dates_notes as string[], public_domain as boolean, rights as string, on_display as boolean, image_mime_type as string, image_iiif_id as string, image_iiif_info as string, image_width as integer, image_height as integer, image_size as integer, image_thumbnail as string, image_native as string, image_cropped as boolean, image_orientation as string, image_hq as boolean, has_3d_file as boolean, has_image as boolean, colors as string[], suggested_bg_color as string[], entropy as double, contrast as double, saturation as double, colortemp as double, brightness as double, titles as (title as string, type as string, language as string)[], artist as string[])[],",
+				"          facets as ({} as string),",
+				"          facets_ranges as ({} as string),",
+				"          autocomplete as string[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> artworksDimensions",
+				"artists foldDown(unroll(items),",
 				"     mapColumn(",
 				"          artist_id = items.id,",
 				"          birth_date_end = items.birth_date_end,",
@@ -109,7 +161,46 @@
 				"",
 				"",
 				") ~> derivedColumn1",
-				"derivedColumn1 derive(artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> derivedColumn2"
+				"derivedColumn1 derive(artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> derivedColumn2",
+				"artworks foldDown(unrollMultiple(items,items.production,items.production_date,items.object_names),",
+				"     mapColumn(",
+				"          id = items.id,",
+				"          acquisition_date = items.acquisition_date,",
+				"          acquisition_date_precision = items.acquisition_date_precision,",
+				"          artist_id = items.production.creator_lref,",
+				"          production_date_start = items.production_date.start,",
+				"          production_date_end = items.production_date.end,",
+				"          techniques = items.techniques,",
+				"          object_number = items.object_number,",
+				"          titles = items.titles.title",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten3",
+				"artworksDimensions foldDown(unrollMultiple(items,items.dimensions),",
+				"     mapColumn(",
+				"          id = items.id,",
+				"          dimension = items.dimensions.type,",
+				"          measurement = items.dimensions.unit,",
+				"          measurement_value = items.dimensions.value",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenDimensions",
+				"flattenDimensions pivot(groupBy(id,",
+				"          measurement),",
+				"     pivotBy(dimension),",
+				"     {} = first(measurement_value),",
+				"     columnNaming: '$N$V',",
+				"     lateral: false) ~> pivotDimensions",
+				"flatten3 aggregate(groupBy(id,",
+				"          acquisition_date,",
+				"          acquisition_date_precision,",
+				"          production_date_start,",
+				"          production_date_end,",
+				"          object_number),",
+				"     artwork_id = first(id),",
+				"          first_artist_id = first(artist_id),",
+				"          first_title = first(titles),",
+				"          first_medium = first(techniques)) ~> aggregate1"
 			]
 		}
 	}
