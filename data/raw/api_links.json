@@ -4,12 +4,6 @@
         "RelativeURL" : "",
         "FileName" : "kiasma_ateneum_artworks.json"
     },
-
-    {
-        "BaseURL" : "https://museumcollection.tokyo/works",
-        "RelativeURL" : "?museums[]=mot-art-museum&output=json",
-        "FileName" : "mot_artworks.json"
-    },
     {
         "BaseURL" : "https://api.smk.dk/api/v1",
         "RelativeURL" : "art/search/?keys=*&lang=en",
