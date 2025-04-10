@@ -45,12 +45,6 @@
 					"description": "Creates an explicit mapping for each drifted column"
 				},
 				{
-					"name": "castBirthData"
-				},
-				{
-					"name": "castDeathData"
-				},
-				{
 					"name": "flatten3"
 				},
 				{
@@ -76,26 +70,11 @@
 					"name": "objectID"
 				},
 				{
-					"name": "titleSTR"
-				},
-				{
-					"name": "productionRaw"
-				},
-				{
-					"name": "acquisitionRaw"
-				},
-				{
-					"name": "derivedColumn2"
-				},
-				{
-					"name": "artistIDint"
-				},
-				{
-					"name": "measurementValue1"
-				},
-				{
 					"name": "dimensionsCol2",
 					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -161,7 +140,7 @@
 				"     {} = first(gender),",
 				"     columnNaming: '$N$V',",
 				"     lateral: false) ~> pivotGenderLang",
-				"castDeathData select(mapColumn(",
+				"addGenderCol select(mapColumn(",
 				"          artist_id,",
 				"          gender = {5},",
 				"          artist_birth_raw,",
@@ -177,12 +156,9 @@
 				"          {6} = toString(byName('6')),",
 				"          {7} = toString(byName('7')),",
 				"          {8} = toString(byName('8')),",
-				"          {9} = toString(byName('9'))) ~> addGenderCol",
-				"addGenderCol derive(artist_birth_raw = toDate(coalesce(birth_date_start, birth_date_end), 'yyyy-MM-dd')",
-				"",
-				"",
-				") ~> castBirthData",
-				"castBirthData derive(artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> castDeathData",
+				"          {9} = toString(byName('9')),",
+				"          artist_birth_raw = toDate(coalesce(birth_date_start, birth_date_end), 'yyyy-MM-dd'),",
+				"          artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> addGenderCol",
 				"artworks foldDown(unrollMultiple(items,items.production,items.production_date,items.object_names),",
 				"     mapColumn(",
 				"          id = items.id,",
@@ -222,10 +198,12 @@
 				"     artwork_id = first(id),",
 				"          first_artist_id = first(artist_id),",
 				"          first_title = first(titles),",
-				"          first_medium = first(techniques),",
+				"          medium_1 = first(techniques),",
+				"          medium_2 = last(techniques),",
 				"          Artist_name = first(artist_name)) ~> aggregate1",
 				"aggregate1 derive(first_title = toString(first_title),",
-				"          first_medium = toString(first_medium)) ~> typeCast",
+				"          medium_1 = toString(medium_1),",
+				"          medium_2 = toString(medium_2)) ~> typeCast",
 				"typeCast, artistsCol join(first_artist_id == artist_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -236,16 +214,40 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"join2 derive(object_id = toInteger(split(artwork_id, '_')[1])) ~> objectID",
-				"objectID derive(title = replace(replace(replace(first_title, '[', ''), ']', ''), '\"', '')) ~> titleSTR",
-				"titleSTR derive(production_raw = coalesce(production_date_start,production_date_end)) ~> productionRaw",
-				"productionRaw derive(acquisition_raw = coalesce(acquisition_date,acquisition_date_precision)) ~> acquisitionRaw",
-				"acquisitionRaw derive(acquisition_method = 'Unknown') ~> derivedColumn2",
-				"derivedColumn2 derive(artist_id = toInteger(split(first_artist_id, '_')[1])) ~> artistIDint",
-				"artistIDint derive(measurement_value1 = height,",
-				"          measurement_value2 = width) ~> measurementValue1",
+				"join2 derive(object_id = toInteger(split(artwork_id, '_')[1]),",
+				"          title = replace(replace(replace(first_title, '[', ''), ']', ''), '\"', ''),",
+				"          production_raw = coalesce(production_date_start,production_date_end),",
+				"          acquisition_raw = coalesce(acquisition_date,acquisition_date_precision),",
+				"          acquisition_method = \"Unknown\",",
+				"          artist_id = toInteger(split(first_artist_id, '_')[1]),",
+				"          measurement_value1 = height,",
+				"          measurement_value2 = width,",
+				"          medium1 = replace(replace(replace(medium_1, '[', ''), ']', ''), '\"', ''),",
+				"          medium2 = replace(replace(replace(medium_2, '[', ''), ']', ''), '\"', ''),",
+				"          Museum_name = \"SMK\") ~> objectID",
 				"dimensionsCol derive(height = toString(byName('height')),",
-				"          width = toString(byName('width'))) ~> dimensionsCol2"
+				"          width = toString(byName('width'))) ~> dimensionsCol2",
+				"objectID select(mapColumn(",
+				"          object_id,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acquisition_raw,",
+				"          acquisition_method,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw,",
+				"          Artist_gender = gender,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          measurement_value2,",
+				"          medium1,",
+				"          medium2,",
+				"          Museum_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
