@@ -26,7 +26,15 @@
 					"name": "artworksDimensions"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SMK_standardized_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "SMK"
+				}
+			],
 			"transformations": [
 				{
 					"name": "flattenArtistData"
@@ -199,11 +207,9 @@
 				"          first_artist_id = first(artist_id),",
 				"          first_title = first(titles),",
 				"          medium_1 = first(techniques),",
-				"          medium_2 = last(techniques),",
 				"          Artist_name = first(artist_name)) ~> aggregate1",
 				"aggregate1 derive(first_title = toString(first_title),",
-				"          medium_1 = toString(medium_1),",
-				"          medium_2 = toString(medium_2)) ~> typeCast",
+				"          medium_1 = toString(medium_1)) ~> typeCast",
 				"typeCast, artistsCol join(first_artist_id == artist_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -223,7 +229,6 @@
 				"          measurement_value1 = height,",
 				"          measurement_value2 = width,",
 				"          medium1 = replace(replace(replace(medium_1, '[', ''), ']', ''), '\"', ''),",
-				"          medium2 = replace(replace(replace(medium_2, '[', ''), ']', ''), '\"', ''),",
 				"          Museum_name = \"SMK\") ~> objectID",
 				"dimensionsCol derive(height = toString(byName('height')),",
 				"          width = toString(byName('width'))) ~> dimensionsCol2",
@@ -243,11 +248,15 @@
 				"          measurement_value1,",
 				"          measurement_value2,",
 				"          medium1,",
-				"          medium2,",
 				"          Museum_name",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SMK"
 			]
 		}
 	}

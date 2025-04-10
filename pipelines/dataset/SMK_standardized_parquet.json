@@ -1,0 +1,20 @@
+{
+	"name": "SMK_standardized_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageStandardized",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "smk",
+				"container": "standardized"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
