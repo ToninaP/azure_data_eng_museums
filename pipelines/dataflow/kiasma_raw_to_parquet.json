@@ -380,7 +380,7 @@
 				"          inventoryNumber,",
 				"          production_raw,",
 				"          acquisition_raw,",
-				"          acquisition_method = acqiusition_method,",
+				"          acquisition_method,",
 				"          artist_id,",
 				"          Artist_name,",
 				"          artist_birth_raw,",
