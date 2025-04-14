@@ -102,7 +102,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date})) ~> derivedColumn1"
+				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date}),",
+				"          column1 = ERROR_FUNCTION('')) ~> derivedColumn1"
 			]
 		}
 	}
