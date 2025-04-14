@@ -87,9 +87,7 @@
 				"          AccessionYear,",
 				"          Title,",
 				"          {Constituent ID},",
-				"          {Artist Display Name},",
 				"          {Artist Display Bio},",
-				"          {Artist Suffix},",
 				"          {Artist Alpha Sort},",
 				"          {Artist Nationality},",
 				"          {Artist Begin Date},",
@@ -101,13 +99,12 @@
 				"          Medium,",
 				"          Dimensions,",
 				"          {Credit Line},",
-				"          Country,",
-				"          Classification",
+				"          {Object Name}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 aggregate(groupBy({Object Name}),",
-				"     column1 = first({Object Name})) ~> aggregate1"
+				"select1 aggregate(groupBy(medium = Medium),",
+				"     column1 = first(Medium)) ~> aggregate1"
 			]
 		}
 	}
