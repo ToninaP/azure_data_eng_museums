@@ -16,6 +16,9 @@
 			"transformations": [
 				{
 					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -98,7 +101,8 @@
 				"          Object_type = {Object Name}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date})) ~> derivedColumn1"
 			]
 		}
 	}
