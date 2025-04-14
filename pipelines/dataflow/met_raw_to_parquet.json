@@ -16,9 +16,6 @@
 			"transformations": [
 				{
 					"name": "select1"
-				},
-				{
-					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -82,29 +79,26 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
 				"source1 select(mapColumn(",
-				"          {Object Number},",
-				"          {Object ID},",
-				"          AccessionYear,",
-				"          Title,",
-				"          {Constituent ID},",
-				"          {Artist Display Bio},",
-				"          {Artist Alpha Sort},",
-				"          {Artist Nationality},",
-				"          {Artist Begin Date},",
-				"          {Artist End Date},",
-				"          {Artist Gender},",
+				"          object_id = {Object ID},",
+				"          title = Title,",
+				"          inventoryNumber = {Object Number},",
+				"          acquisition_raw = AccessionYear,",
+				"          artist_id = {Constituent ID},",
+				"          Artist_name = {Artist Alpha Sort},",
+				"          Artist_country = {Artist Nationality},",
+				"          artist_birth_raw = {Artist Begin Date},",
+				"          artist_death_raw = {Artist End Date},",
+				"          Artist_gender = {Artist Gender},",
 				"          {Object Date},",
 				"          {Object Begin Date},",
 				"          {Object End Date},",
 				"          Medium,",
 				"          Dimensions,",
-				"          {Credit Line},",
-				"          {Object Name}",
+				"          acquisition_method = {Credit Line},",
+				"          Object_type = {Object Name}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 aggregate(groupBy(medium = Medium),",
-				"     column1 = first(Medium)) ~> aggregate1"
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
