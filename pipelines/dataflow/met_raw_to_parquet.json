@@ -12,13 +12,27 @@
 					"name": "metRaw"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "met_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "MET"
+				}
+			],
 			"transformations": [
 				{
 					"name": "select1"
 				},
 				{
 					"name": "productionRaw"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -95,17 +109,45 @@
 				"          {Object Date},",
 				"          {Object Begin Date},",
 				"          {Object End Date},",
-				"          Medium,",
 				"          Dimensions,",
 				"          acquisition_method = {Credit Line},",
-				"          Object_type = {Object Name}",
+				"          medium1 = {Object Name}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date}),",
-				"          medium_arr = split(Medium, ','),",
 				"          dim_europe = split(split(Dimensions, '(')[2], ')')[1],",
-				"          dimension_unit = split(split(split(Dimensions, '(')[2], ')')[1], ' ')) ~> productionRaw"
+				"          Museum = \"MET\",",
+				"          object_id = toInteger(object_id)) ~> productionRaw",
+				"productionRaw derive(dimension_unit = regexReplace(replace(dim_europe, 'x', ' '), '[^A-Za-z]+', ' '),",
+				"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')",
+				"",
+				") ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          object_id,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acquisition_raw,",
+				"          acquisition_method,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw,",
+				"          Artist_gender,",
+				"          Artist_country,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          medium1,",
+				"          Museum",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MET"
 			]
 		}
 	}
