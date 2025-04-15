@@ -97,16 +97,7 @@
 					"name": "acqusitionRaw"
 				},
 				{
-					"name": "productionRaw"
-				},
-				{
 					"name": "artistName"
-				},
-				{
-					"name": "artistBirthRaw"
-				},
-				{
-					"name": "artistDeathRaw"
 				},
 				{
 					"name": "selectRaw"
@@ -234,12 +225,12 @@
 				"joinMedium split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
 				"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
 				"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
-				"productionRaw foldDown(unroll(people),",
+				"acqusitionRaw foldDown(unroll(people),",
 				"     mapColumn(",
 				"          objectId,",
 				"          title = title.fi,",
 				"          inventoryNumber,",
-				"          acqiusition_method = acquisitionMethod.en,",
+				"          acquisition_method = acquisitionMethod.en,",
 				"          acquisition_raw,",
 				"          production_raw,",
 				"          responsibleOrganisation,",
@@ -327,19 +318,17 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinMedium",
-				"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)",
-				"",
-				") ~> acqusitionRaw",
-				"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
-				"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
-				"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
-				"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw",
-				"artistDeathRaw select(mapColumn(",
+				"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate),",
+				"          production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> acqusitionRaw",
+				"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName),",
+				"          artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01')),",
+				"          artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistName",
+				"artistName select(mapColumn(",
 				"          objectId,",
 				"          title,",
 				"          inventoryNumber,",
 				"          production_raw,",
-				"          acqiusition_method,",
+				"          acquisition_method,",
 				"          acquisition_raw,",
 				"          responsibleOrganisation,",
 				"          artist_id,",
@@ -356,7 +345,7 @@
 				"          inventoryNumber,",
 				"          production_raw,",
 				"          acquisition_raw,",
-				"          acqiusition_method,",
+				"          acquisition_method,",
 				"          artist_id,",
 				"          Artist_name,",
 				"          artist_birth_raw,",
@@ -382,7 +371,7 @@
 				"          inventoryNumber,",
 				"          production_raw,",
 				"          acquisition_raw,",
-				"          acqiusition_method,",
+				"          acquisition_method,",
 				"          artist_id,",
 				"          Artist_name,",
 				"          artist_birth_raw,",

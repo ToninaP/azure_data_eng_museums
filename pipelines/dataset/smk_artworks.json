@@ -1,0 +1,296 @@
+{
+	"name": "smk_artworks",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BlobStorageRaw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "smk_artworks.json",
+				"folderPath": "api",
+				"container": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"offset": {
+					"type": "integer"
+				},
+				"rows": {
+					"type": "integer"
+				},
+				"found": {
+					"type": "integer"
+				},
+				"items": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"created": {
+								"type": "string"
+							},
+							"modified": {
+								"type": "string"
+							},
+							"acquisition_date": {
+								"type": "string"
+							},
+							"acquisition_date_precision": {
+								"type": "string"
+							},
+							"dimensions": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"part": {
+											"type": "string"
+										},
+										"type": {
+											"type": "string"
+										},
+										"unit": {
+											"type": "string"
+										},
+										"value": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"documentation": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"title": {
+											"type": "string"
+										},
+										"author": {
+											"type": "string"
+										},
+										"notes": {
+											"type": "string"
+										},
+										"shelfmark": {
+											"type": "string"
+										},
+										"year_of_publication": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"object_names": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"production": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"creator": {
+											"type": "string"
+										},
+										"creator_forename": {
+											"type": "string"
+										},
+										"creator_surname": {
+											"type": "string"
+										},
+										"creator_date_of_birth": {
+											"type": "string"
+										},
+										"creator_date_of_death": {
+											"type": "string"
+										},
+										"creator_nationality": {
+											"type": "string"
+										},
+										"creator_gender": {
+											"type": "string"
+										},
+										"creator_lref": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"production_date": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"start": {
+											"type": "string"
+										},
+										"end": {
+											"type": "string"
+										},
+										"period": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"techniques": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"object_number": {
+								"type": "string"
+							},
+							"object_url": {
+								"type": "string"
+							},
+							"frontend_url": {
+								"type": "string"
+							},
+							"iiif_manifest": {
+								"type": "string"
+							},
+							"enrichment_url": {
+								"type": "string"
+							},
+							"similar_images_url": {
+								"type": "string"
+							},
+							"production_dates_notes": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"public_domain": {
+								"type": "boolean"
+							},
+							"rights": {
+								"type": "string"
+							},
+							"on_display": {
+								"type": "boolean"
+							},
+							"image_mime_type": {
+								"type": "string"
+							},
+							"image_iiif_id": {
+								"type": "string"
+							},
+							"image_iiif_info": {
+								"type": "string"
+							},
+							"image_width": {
+								"type": "integer"
+							},
+							"image_height": {
+								"type": "integer"
+							},
+							"image_size": {
+								"type": "integer"
+							},
+							"image_thumbnail": {
+								"type": "string"
+							},
+							"image_native": {
+								"type": "string"
+							},
+							"image_cropped": {
+								"type": "boolean"
+							},
+							"image_orientation": {
+								"type": "string"
+							},
+							"image_hq": {
+								"type": "boolean"
+							},
+							"has_3d_file": {
+								"type": "boolean"
+							},
+							"has_image": {
+								"type": "boolean"
+							},
+							"colors": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"suggested_bg_color": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							},
+							"entropy": {
+								"type": "number"
+							},
+							"contrast": {
+								"type": "number"
+							},
+							"saturation": {
+								"type": "number"
+							},
+							"colortemp": {
+								"type": "number"
+							},
+							"brightness": {
+								"type": "number"
+							},
+							"titles": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"title": {
+											"type": "string"
+										},
+										"type": {
+											"type": "string"
+										},
+										"language": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"artist": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"facets": {
+					"type": "object"
+				},
+				"facets_ranges": {
+					"type": "object"
+				},
+				"autocomplete": {
+					"type": "array"
+				}
+			}
+		}
+	}
+}

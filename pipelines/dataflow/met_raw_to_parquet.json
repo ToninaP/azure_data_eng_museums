@@ -1,0 +1,154 @@
+{
+	"name": "met_raw_to_parquet",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "met_raw",
+						"type": "DatasetReference"
+					},
+					"name": "metRaw"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "met_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "MET"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "productionRaw"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Object Number} as string,",
+				"          {Is Highlight} as string,",
+				"          {Is Timeline Work} as string,",
+				"          {Is Public Domain} as string,",
+				"          {Object ID} as string,",
+				"          {Gallery Number} as string,",
+				"          Department as string,",
+				"          AccessionYear as short,",
+				"          {Object Name} as string,",
+				"          Title as string,",
+				"          Culture as string,",
+				"          Period as string,",
+				"          Dynasty as string,",
+				"          Reign as string,",
+				"          Portfolio as string,",
+				"          {Constituent ID} as string,",
+				"          {Artist Role} as string,",
+				"          {Artist Prefix} as string,",
+				"          {Artist Display Name} as string,",
+				"          {Artist Display Bio} as string,",
+				"          {Artist Suffix} as string,",
+				"          {Artist Alpha Sort} as string,",
+				"          {Artist Nationality} as string,",
+				"          {Artist Begin Date} as string,",
+				"          {Artist End Date} as string,",
+				"          {Artist Gender} as string,",
+				"          {Artist ULAN URL} as string,",
+				"          {Artist Wikidata URL} as string,",
+				"          {Object Date} as string,",
+				"          {Object Begin Date} as short,",
+				"          {Object End Date} as short,",
+				"          Medium as string,",
+				"          Dimensions as string,",
+				"          {Credit Line} as string,",
+				"          {Geography Type} as string,",
+				"          City as string,",
+				"          State as string,",
+				"          County as string,",
+				"          Country as string,",
+				"          Region as string,",
+				"          Subregion as string,",
+				"          Locale as string,",
+				"          Locus as string,",
+				"          Excavation as string,",
+				"          River as string,",
+				"          Classification as string,",
+				"          {Rights and Reproduction} as string,",
+				"          {Link Resource} as string,",
+				"          {Object Wikidata URL} as string,",
+				"          {Metadata Date} as string,",
+				"          Repository as string,",
+				"          Tags as string,",
+				"          {Tags AAT URL} as string,",
+				"          {Tags Wikidata URL} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> metRaw",
+				"metRaw select(mapColumn(",
+				"          object_id = {Object ID},",
+				"          title = Title,",
+				"          inventoryNumber = {Object Number},",
+				"          acquisition_raw = AccessionYear,",
+				"          artist_id = {Constituent ID},",
+				"          Artist_name = {Artist Alpha Sort},",
+				"          Artist_country = {Artist Nationality},",
+				"          artist_birth_raw = {Artist Begin Date},",
+				"          artist_death_raw = {Artist End Date},",
+				"          Artist_gender = {Artist Gender},",
+				"          {Object Date},",
+				"          {Object Begin Date},",
+				"          {Object End Date},",
+				"          Dimensions,",
+				"          acquisition_method = {Credit Line},",
+				"          medium1 = {Object Name}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date}),",
+				"          dim_europe = split(split(Dimensions, '(')[2], ')')[1],",
+				"          Museum = \"MET\",",
+				"          object_id = toInteger(object_id)) ~> productionRaw",
+				"productionRaw derive(dimension_unit = regexReplace(replace(dim_europe, 'x', ' '), '[^A-Za-z]+', ' '),",
+				"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')",
+				"",
+				") ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          object_id,",
+				"          title,",
+				"          inventoryNumber,",
+				"          production_raw,",
+				"          acquisition_raw,",
+				"          acquisition_method,",
+				"          artist_id,",
+				"          Artist_name,",
+				"          artist_birth_raw,",
+				"          artist_death_raw,",
+				"          Artist_gender,",
+				"          Artist_country,",
+				"          dimension_unit,",
+				"          measurement_value1,",
+				"          medium1,",
+				"          Museum",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MET"
+			]
+		}
+	}
+}
