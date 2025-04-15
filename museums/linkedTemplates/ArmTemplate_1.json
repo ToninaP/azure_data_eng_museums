@@ -13,6 +13,244 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/mot_json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "mot_artworks.json",
+						"folderPath": "api",
+						"container": "raw"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"1context": {
+							"type": "object",
+							"properties": {
+								"dct": {
+									"type": "string"
+								},
+								"schema": {
+									"type": "string"
+								},
+								"xsd": {
+									"type": "string"
+								},
+								"rdf": {
+									"type": "string"
+								},
+								"rdfs": {
+									"type": "string"
+								}
+							}
+						},
+						"1graph": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"1type": {
+										"type": "string"
+									},
+									"1id": {
+										"type": "string"
+									},
+									"schema:identifier": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1type": {
+													"type": "string"
+												},
+												"schema:name": {
+													"type": "string"
+												},
+												"schema:value": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"schema:genre": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1id": {
+													"type": "string"
+												},
+												"skos:preflabel": {
+													"type": "object",
+													"properties": {
+														"1value": {
+															"type": "string"
+														},
+														"1lang": {
+															"type": "string"
+														}
+													}
+												}
+											}
+										}
+									},
+									"schema:name": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1value": {
+													"type": "string"
+												},
+												"1lang": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"schema:creator": {
+										"type": "object",
+										"properties": {
+											"1type": {
+												"type": "string"
+											},
+											"schema:name": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"1value": {
+															"type": "string"
+														},
+														"1lang": {
+															"type": "string"
+														}
+													}
+												}
+											}
+										}
+									},
+									"schema:dateCreated": {
+										"type": "string"
+									},
+									"schema:material": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1value": {
+													"type": "string"
+												},
+												"1lang": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"schema:isPartOf": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1type": {
+													"type": "string"
+												},
+												"schema:maintainer": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"1type": {
+																"type": "string"
+															},
+															"schema:name": {
+																"type": "array",
+																"items": {
+																	"type": "object",
+																	"properties": {
+																		"1value": {
+																			"type": "string"
+																		},
+																		"1lang": {
+																			"type": "string"
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									},
+									"dct:provenance": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"1value": {
+													"type": "string"
+												},
+												"1lang": {
+													"type": "string"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/rawCSVpaths')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "github_csv_file_paths.json",
+						"container": "misc"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"BaseURL": {
+							"type": "string"
+						},
+						"RelativeURL": {
+							"type": "string"
+						},
+						"FileName": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/raw_api_links')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -31,6 +269,432 @@
 					}
 				},
 				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/smk_artists')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "smk_artists.json",
+						"folderPath": "api",
+						"container": "raw"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"offset": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "integer"
+						},
+						"found": {
+							"type": "integer"
+						},
+						"items": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"created": {
+										"type": "string"
+									},
+									"modified": {
+										"type": "string"
+									},
+									"works": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"birth_date_end": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"birth_date_start": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"death_date_end": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"death_date_start": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"gender": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"name_type": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						},
+						"facets": {
+							"type": "object"
+						},
+						"facets_ranges": {
+							"type": "object"
+						},
+						"autocomplete": {
+							"type": "array"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/smk_artworks')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageRaw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "smk_artworks.json",
+						"folderPath": "api",
+						"container": "raw"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"offset": {
+							"type": "integer"
+						},
+						"rows": {
+							"type": "integer"
+						},
+						"found": {
+							"type": "integer"
+						},
+						"items": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"created": {
+										"type": "string"
+									},
+									"modified": {
+										"type": "string"
+									},
+									"acquisition_date": {
+										"type": "string"
+									},
+									"acquisition_date_precision": {
+										"type": "string"
+									},
+									"dimensions": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"part": {
+													"type": "string"
+												},
+												"type": {
+													"type": "string"
+												},
+												"unit": {
+													"type": "string"
+												},
+												"value": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"documentation": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"title": {
+													"type": "string"
+												},
+												"author": {
+													"type": "string"
+												},
+												"notes": {
+													"type": "string"
+												},
+												"shelfmark": {
+													"type": "string"
+												},
+												"year_of_publication": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"object_names": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"name": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"production": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"creator": {
+													"type": "string"
+												},
+												"creator_forename": {
+													"type": "string"
+												},
+												"creator_surname": {
+													"type": "string"
+												},
+												"creator_date_of_birth": {
+													"type": "string"
+												},
+												"creator_date_of_death": {
+													"type": "string"
+												},
+												"creator_nationality": {
+													"type": "string"
+												},
+												"creator_gender": {
+													"type": "string"
+												},
+												"creator_lref": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"production_date": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"start": {
+													"type": "string"
+												},
+												"end": {
+													"type": "string"
+												},
+												"period": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"techniques": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"object_number": {
+										"type": "string"
+									},
+									"object_url": {
+										"type": "string"
+									},
+									"frontend_url": {
+										"type": "string"
+									},
+									"iiif_manifest": {
+										"type": "string"
+									},
+									"enrichment_url": {
+										"type": "string"
+									},
+									"similar_images_url": {
+										"type": "string"
+									},
+									"production_dates_notes": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"public_domain": {
+										"type": "boolean"
+									},
+									"rights": {
+										"type": "string"
+									},
+									"on_display": {
+										"type": "boolean"
+									},
+									"image_mime_type": {
+										"type": "string"
+									},
+									"image_iiif_id": {
+										"type": "string"
+									},
+									"image_iiif_info": {
+										"type": "string"
+									},
+									"image_width": {
+										"type": "integer"
+									},
+									"image_height": {
+										"type": "integer"
+									},
+									"image_size": {
+										"type": "integer"
+									},
+									"image_thumbnail": {
+										"type": "string"
+									},
+									"image_native": {
+										"type": "string"
+									},
+									"image_cropped": {
+										"type": "boolean"
+									},
+									"image_orientation": {
+										"type": "string"
+									},
+									"image_hq": {
+										"type": "boolean"
+									},
+									"has_3d_file": {
+										"type": "boolean"
+									},
+									"has_image": {
+										"type": "boolean"
+									},
+									"colors": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"suggested_bg_color": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"entropy": {
+										"type": "number"
+									},
+									"contrast": {
+										"type": "number"
+									},
+									"saturation": {
+										"type": "number"
+									},
+									"colortemp": {
+										"type": "number"
+									},
+									"brightness": {
+										"type": "number"
+									},
+									"titles": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"title": {
+													"type": "string"
+												},
+												"type": {
+													"type": "string"
+												},
+												"language": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"artist": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						},
+						"facets": {
+							"type": "object"
+						},
+						"facets_ranges": {
+							"type": "object"
+						},
+						"autocomplete": {
+							"type": "array"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/met_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageStandardized",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "met",
+						"container": "standardized"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
 			},
 			"dependsOn": []
 		},
@@ -176,7 +840,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/rawCSVpaths')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ingest_museums_json')]",
@@ -407,16 +1073,7 @@
 							"name": "acqusitionRaw"
 						},
 						{
-							"name": "productionRaw"
-						},
-						{
 							"name": "artistName"
-						},
-						{
-							"name": "artistBirthRaw"
-						},
-						{
-							"name": "artistDeathRaw"
 						},
 						{
 							"name": "selectRaw"
@@ -544,12 +1201,12 @@
 						"joinMedium split(responsibleOrganisation=='Kansallisgalleria / Ateneumin taidemuseo',",
 						"     responsibleOrganisation=='Kansallisgalleria / Nykytaiteen museo Kiasma',",
 						"     disjoint: false) ~> split1@(ateneum, kiasma, rest)",
-						"productionRaw foldDown(unroll(people),",
+						"acqusitionRaw foldDown(unroll(people),",
 						"     mapColumn(",
 						"          objectId,",
 						"          title = title.fi,",
 						"          inventoryNumber,",
-						"          acqiusition_method = acquisitionMethod.en,",
+						"          acquisition_method = acquisitionMethod.en,",
 						"          acquisition_raw,",
 						"          production_raw,",
 						"          responsibleOrganisation,",
@@ -637,17 +1294,17 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> joinMedium",
-						"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate)) ~> acqusitionRaw",
-						"acqusitionRaw derive(production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> productionRaw",
-						"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName)) ~> artistName",
-						"artistName derive(artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01'))) ~> artistBirthRaw",
-						"artistBirthRaw derive(artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistDeathRaw",
-						"artistDeathRaw select(mapColumn(",
+						"selectBasicCols derive(acquisition_raw = iif(isNull(acquisitionDate), toString(acquisitionYear), acquisitionDate),",
+						"          production_raw = coalesce(toString(yearTo), toString(yearFrom), dateFrom)) ~> acqusitionRaw",
+						"flattenArtist derive(Artist_name = iif(isNull(familyName + ' ' + firstName), coalesce(familyName, firstName), familyName + ' ' + firstName),",
+						"          artist_birth_raw = coalesce(birthDate, toDate(toString(birthYear) + '-01-01')),",
+						"          artist_death_raw = coalesce(deathDate, toDate(toString(deathYear) + '-01-01'))) ~> artistName",
+						"artistName select(mapColumn(",
 						"          objectId,",
 						"          title,",
 						"          inventoryNumber,",
 						"          production_raw,",
-						"          acqiusition_method,",
+						"          acquisition_method,",
 						"          acquisition_raw,",
 						"          responsibleOrganisation,",
 						"          artist_id,",
@@ -664,7 +1321,7 @@
 						"          inventoryNumber,",
 						"          production_raw,",
 						"          acquisition_raw,",
-						"          acqiusition_method,",
+						"          acquisition_method,",
 						"          artist_id,",
 						"          Artist_name,",
 						"          artist_birth_raw,",
@@ -690,7 +1347,7 @@
 						"          inventoryNumber,",
 						"          production_raw,",
 						"          acquisition_raw,",
-						"          acqiusition_method,",
+						"          acquisition_method,",
 						"          artist_id,",
 						"          Artist_name,",
 						"          artist_birth_raw,",
@@ -723,6 +1380,434 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/met_raw_to_parquet')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "met_raw",
+								"type": "DatasetReference"
+							},
+							"name": "metRaw"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "met_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "MET"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "productionRaw"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {Object Number} as string,",
+						"          {Is Highlight} as string,",
+						"          {Is Timeline Work} as string,",
+						"          {Is Public Domain} as string,",
+						"          {Object ID} as string,",
+						"          {Gallery Number} as string,",
+						"          Department as string,",
+						"          AccessionYear as short,",
+						"          {Object Name} as string,",
+						"          Title as string,",
+						"          Culture as string,",
+						"          Period as string,",
+						"          Dynasty as string,",
+						"          Reign as string,",
+						"          Portfolio as string,",
+						"          {Constituent ID} as string,",
+						"          {Artist Role} as string,",
+						"          {Artist Prefix} as string,",
+						"          {Artist Display Name} as string,",
+						"          {Artist Display Bio} as string,",
+						"          {Artist Suffix} as string,",
+						"          {Artist Alpha Sort} as string,",
+						"          {Artist Nationality} as string,",
+						"          {Artist Begin Date} as string,",
+						"          {Artist End Date} as string,",
+						"          {Artist Gender} as string,",
+						"          {Artist ULAN URL} as string,",
+						"          {Artist Wikidata URL} as string,",
+						"          {Object Date} as string,",
+						"          {Object Begin Date} as short,",
+						"          {Object End Date} as short,",
+						"          Medium as string,",
+						"          Dimensions as string,",
+						"          {Credit Line} as string,",
+						"          {Geography Type} as string,",
+						"          City as string,",
+						"          State as string,",
+						"          County as string,",
+						"          Country as string,",
+						"          Region as string,",
+						"          Subregion as string,",
+						"          Locale as string,",
+						"          Locus as string,",
+						"          Excavation as string,",
+						"          River as string,",
+						"          Classification as string,",
+						"          {Rights and Reproduction} as string,",
+						"          {Link Resource} as string,",
+						"          {Object Wikidata URL} as string,",
+						"          {Metadata Date} as string,",
+						"          Repository as string,",
+						"          Tags as string,",
+						"          {Tags AAT URL} as string,",
+						"          {Tags Wikidata URL} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> metRaw",
+						"metRaw select(mapColumn(",
+						"          object_id = {Object ID},",
+						"          title = Title,",
+						"          inventoryNumber = {Object Number},",
+						"          acquisition_raw = AccessionYear,",
+						"          artist_id = {Constituent ID},",
+						"          Artist_name = {Artist Alpha Sort},",
+						"          Artist_country = {Artist Nationality},",
+						"          artist_birth_raw = {Artist Begin Date},",
+						"          artist_death_raw = {Artist End Date},",
+						"          Artist_gender = {Artist Gender},",
+						"          {Object Date},",
+						"          {Object Begin Date},",
+						"          {Object End Date},",
+						"          Dimensions,",
+						"          acquisition_method = {Credit Line},",
+						"          medium1 = {Object Name}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date}),",
+						"          dim_europe = split(split(Dimensions, '(')[2], ')')[1],",
+						"          Museum = \"MET\",",
+						"          object_id = toInteger(object_id)) ~> productionRaw",
+						"productionRaw derive(dimension_unit = regexReplace(replace(dim_europe, 'x', ' '), '[^A-Za-z]+', ' '),",
+						"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')",
+						"",
+						") ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          object_id,",
+						"          title,",
+						"          inventoryNumber,",
+						"          production_raw,",
+						"          acquisition_raw,",
+						"          acquisition_method,",
+						"          artist_id,",
+						"          Artist_name,",
+						"          artist_birth_raw,",
+						"          artist_death_raw,",
+						"          Artist_gender,",
+						"          Artist_country,",
+						"          dimension_unit,",
+						"          measurement_value1,",
+						"          medium1,",
+						"          Museum",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MET"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/met_parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/smk_raw_to_parquet')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "smk_artists",
+								"type": "DatasetReference"
+							},
+							"name": "artists"
+						},
+						{
+							"dataset": {
+								"referenceName": "smk_artworks",
+								"type": "DatasetReference"
+							},
+							"name": "artworks"
+						},
+						{
+							"dataset": {
+								"referenceName": "smk_artworks",
+								"type": "DatasetReference"
+							},
+							"name": "artworksDimensions"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SMK_standardized_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "SMK"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flattenArtistData"
+						},
+						{
+							"name": "addGenderId"
+						},
+						{
+							"name": "pivotGenderLang"
+						},
+						{
+							"name": "artistsCol"
+						},
+						{
+							"name": "addGenderCol",
+							"description": "Creates an explicit mapping for each drifted column"
+						},
+						{
+							"name": "flatten3"
+						},
+						{
+							"name": "flattenDimensions"
+						},
+						{
+							"name": "dimensionsCol"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "typeCast",
+							"description": "Autogenerated by data preview actions"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "objectID"
+						},
+						{
+							"name": "dimensionsCol2",
+							"description": "Creates an explicit mapping for each drifted column"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          offset as integer,",
+						"          rows as integer,",
+						"          found as integer,",
+						"          items as (id as string, created as string, modified as string, works as string[], birth_date_end as string[], birth_date_start as string[], death_date_end as string[], death_date_start as string[], gender as string[], name_type as string[])[],",
+						"          facets as ({} as string),",
+						"          facets_ranges as ({} as string),",
+						"          autocomplete as string[]",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> artists",
+						"source(output(",
+						"          offset as integer,",
+						"          rows as integer,",
+						"          found as integer,",
+						"          items as (id as string, created as string, modified as string, acquisition_date as string, acquisition_date_precision as string, dimensions as (part as string, type as string, unit as string, value as string)[], documentation as (title as string, author as string, notes as string, shelfmark as string, year_of_publication as string)[], object_names as (name as string)[], production as (creator as string, creator_forename as string, creator_surname as string, creator_date_of_birth as string, creator_date_of_death as string, creator_nationality as string, creator_gender as string, creator_lref as string)[], production_date as (start as string, end as string, period as string)[], techniques as string[], object_number as string, object_url as string, frontend_url as string, iiif_manifest as string, enrichment_url as string, similar_images_url as string, production_dates_notes as string[], public_domain as boolean, rights as string, on_display as boolean, image_mime_type as string, image_iiif_id as string, image_iiif_info as string, image_width as integer, image_height as integer, image_size as integer, image_thumbnail as string, image_native as string, image_cropped as boolean, image_orientation as string, image_hq as boolean, has_3d_file as boolean, has_image as boolean, colors as string[], suggested_bg_color as string[], entropy as double, contrast as double, saturation as double, colortemp as double, brightness as double, titles as (title as string, type as string, language as string)[], artist as string[])[],",
+						"          facets as ({} as string),",
+						"          facets_ranges as ({} as string),",
+						"          autocomplete as string[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> artworks",
+						"source(output(",
+						"          offset as integer,",
+						"          rows as integer,",
+						"          found as integer,",
+						"          items as (id as string, created as string, modified as string, acquisition_date as string, acquisition_date_precision as string, dimensions as (part as string, type as string, unit as string, value as string)[], documentation as (title as string, author as string, notes as string, shelfmark as string, year_of_publication as string)[], object_names as (name as string)[], production as (creator as string, creator_forename as string, creator_surname as string, creator_date_of_birth as string, creator_date_of_death as string, creator_nationality as string, creator_gender as string, creator_lref as string)[], production_date as (start as string, end as string, period as string)[], techniques as string[], object_number as string, object_url as string, frontend_url as string, iiif_manifest as string, enrichment_url as string, similar_images_url as string, production_dates_notes as string[], public_domain as boolean, rights as string, on_display as boolean, image_mime_type as string, image_iiif_id as string, image_iiif_info as string, image_width as integer, image_height as integer, image_size as integer, image_thumbnail as string, image_native as string, image_cropped as boolean, image_orientation as string, image_hq as boolean, has_3d_file as boolean, has_image as boolean, colors as string[], suggested_bg_color as string[], entropy as double, contrast as double, saturation as double, colortemp as double, brightness as double, titles as (title as string, type as string, language as string)[], artist as string[])[],",
+						"          facets as ({} as string),",
+						"          facets_ranges as ({} as string),",
+						"          autocomplete as string[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> artworksDimensions",
+						"artists foldDown(unrollMultiple(items,items.birth_date_end,items.birth_date_start,items.death_date_end,items.death_date_start,items.gender),",
+						"     mapColumn(",
+						"          artist_id = items.id,",
+						"          birth_date_end = items.birth_date_end,",
+						"          birth_date_start = items.birth_date_start,",
+						"          death_date_end = items.death_date_end,",
+						"          death_date_start = items.death_date_start,",
+						"          gender = items.gender",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenArtistData",
+						"flattenArtistData window(over(artist_id),",
+						"     asc(gender, true),",
+						"     gender_lang = rowNumber()) ~> addGenderId",
+						"addGenderId pivot(groupBy(artist_id,",
+						"          birth_date_end,",
+						"          birth_date_start,",
+						"          death_date_end,",
+						"          death_date_start),",
+						"     pivotBy(gender_lang),",
+						"     {} = first(gender),",
+						"     columnNaming: '$N$V',",
+						"     lateral: false) ~> pivotGenderLang",
+						"addGenderCol select(mapColumn(",
+						"          artist_id,",
+						"          gender = {5},",
+						"          artist_birth_raw,",
+						"          artist_death_raw",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> artistsCol",
+						"pivotGenderLang derive({1} = toString(byName('1')),",
+						"          {2} = toString(byName('2')),",
+						"          {3} = toString(byName('3')),",
+						"          {4} = toString(byName('4')),",
+						"          {5} = toString(byName('5')),",
+						"          {6} = toString(byName('6')),",
+						"          {7} = toString(byName('7')),",
+						"          {8} = toString(byName('8')),",
+						"          {9} = toString(byName('9')),",
+						"          artist_birth_raw = toDate(coalesce(birth_date_start, birth_date_end), 'yyyy-MM-dd'),",
+						"          artist_death_raw = toDate(coalesce(death_date_start, death_date_end), 'yyyy-MM-dd')) ~> addGenderCol",
+						"artworks foldDown(unrollMultiple(items,items.production,items.production_date,items.object_names),",
+						"     mapColumn(",
+						"          id = items.id,",
+						"          acquisition_date = items.acquisition_date,",
+						"          acquisition_date_precision = items.acquisition_date_precision,",
+						"          artist_id = items.production.creator_lref,",
+						"          production_date_start = items.production_date.start,",
+						"          production_date_end = items.production_date.end,",
+						"          techniques = items.techniques,",
+						"          inventoryNumber = items.object_number,",
+						"          titles = items.titles.title,",
+						"          artist_name = items.production.creator",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten3",
+						"artworksDimensions foldDown(unrollMultiple(items,items.dimensions),",
+						"     mapColumn(",
+						"          id = items.id,",
+						"          dimension = items.dimensions.type,",
+						"          dimension_unit = items.dimensions.unit,",
+						"          measurement_value = items.dimensions.value",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenDimensions",
+						"flattenDimensions pivot(groupBy(id,",
+						"          dimension_unit),",
+						"     pivotBy(dimension),",
+						"     {} = first(measurement_value),",
+						"     columnNaming: '$N$V',",
+						"     lateral: false) ~> dimensionsCol",
+						"flatten3 aggregate(groupBy(id,",
+						"          acquisition_date,",
+						"          acquisition_date_precision,",
+						"          production_date_start,",
+						"          production_date_end,",
+						"          inventoryNumber),",
+						"     artwork_id = first(id),",
+						"          first_artist_id = first(artist_id),",
+						"          first_title = first(titles),",
+						"          medium_1 = first(techniques),",
+						"          Artist_name = first(artist_name)) ~> aggregate1",
+						"aggregate1 derive(first_title = toString(first_title),",
+						"          medium_1 = toString(medium_1)) ~> typeCast",
+						"typeCast, artistsCol join(first_artist_id == artist_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, dimensionsCol2 join(artwork_id == dimensionsCol@id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 derive(object_id = toInteger(split(artwork_id, '_')[1]),",
+						"          title = replace(replace(replace(first_title, '[', ''), ']', ''), '\"', ''),",
+						"          production_raw = coalesce(production_date_start,production_date_end),",
+						"          acquisition_raw = coalesce(acquisition_date,acquisition_date_precision),",
+						"          acquisition_method = \"Unknown\",",
+						"          artist_id = toInteger(split(first_artist_id, '_')[1]),",
+						"          measurement_value1 = height,",
+						"          measurement_value2 = width,",
+						"          medium1 = replace(replace(replace(medium_1, '[', ''), ']', ''), '\"', ''),",
+						"          Museum_name = \"SMK\") ~> objectID",
+						"dimensionsCol derive(height = toString(byName('height')),",
+						"          width = toString(byName('width'))) ~> dimensionsCol2",
+						"objectID select(mapColumn(",
+						"          object_id,",
+						"          title,",
+						"          inventoryNumber,",
+						"          production_raw,",
+						"          acquisition_raw,",
+						"          acquisition_method,",
+						"          artist_id,",
+						"          Artist_name,",
+						"          artist_birth_raw,",
+						"          artist_death_raw,",
+						"          Artist_gender = gender,",
+						"          dimension_unit,",
+						"          measurement_value1,",
+						"          measurement_value2,",
+						"          medium1,",
+						"          Museum_name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SMK"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/smk_artists')]",
+				"[concat(variables('factoryId'), '/datasets/smk_artworks')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/raw_transformation_format')]",
@@ -762,6 +1847,82 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "smk_raw_to_parquet",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "kiasma_raw_to_parquet",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "smk_raw_to_parquet",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"artists": {},
+									"artworks": {},
+									"artworksDimensions": {},
+									"SMK": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "met_raw_to_parquet",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "smk_raw_to_parquet",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "met_raw_to_parquet",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"metRaw": {},
+									"MET": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -770,7 +1931,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/kiasma_raw_to_parquet')]"
+				"[concat(variables('factoryId'), '/dataflows/kiasma_raw_to_parquet')]",
+				"[concat(variables('factoryId'), '/dataflows/smk_raw_to_parquet')]",
+				"[concat(variables('factoryId'), '/dataflows/met_raw_to_parquet')]"
 			]
 		}
 	]

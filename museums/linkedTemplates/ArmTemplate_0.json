@@ -526,6 +526,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SMK_standardized_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageStandardized",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "smk",
+						"container": "standardized"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageStandardized')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/all_api_files_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1052,7 +1077,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/mot_json')]",
+			"name": "[concat(parameters('factoryName'), '/met_raw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1061,233 +1086,20 @@
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Json",
+				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "mot_artworks.json",
-						"folderPath": "api",
+						"fileName": "met_artworks.csv",
+						"folderPath": "open access",
 						"container": "raw"
-					}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"1context": {
-							"type": "object",
-							"properties": {
-								"dct": {
-									"type": "string"
-								},
-								"schema": {
-									"type": "string"
-								},
-								"xsd": {
-									"type": "string"
-								},
-								"rdf": {
-									"type": "string"
-								},
-								"rdfs": {
-									"type": "string"
-								}
-							}
-						},
-						"1graph": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"1type": {
-										"type": "string"
-									},
-									"1id": {
-										"type": "string"
-									},
-									"schema:identifier": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1type": {
-													"type": "string"
-												},
-												"schema:name": {
-													"type": "string"
-												},
-												"schema:value": {
-													"type": "string"
-												}
-											}
-										}
-									},
-									"schema:genre": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1id": {
-													"type": "string"
-												},
-												"skos:preflabel": {
-													"type": "object",
-													"properties": {
-														"1value": {
-															"type": "string"
-														},
-														"1lang": {
-															"type": "string"
-														}
-													}
-												}
-											}
-										}
-									},
-									"schema:name": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1value": {
-													"type": "string"
-												},
-												"1lang": {
-													"type": "string"
-												}
-											}
-										}
-									},
-									"schema:creator": {
-										"type": "object",
-										"properties": {
-											"1type": {
-												"type": "string"
-											},
-											"schema:name": {
-												"type": "array",
-												"items": {
-													"type": "object",
-													"properties": {
-														"1value": {
-															"type": "string"
-														},
-														"1lang": {
-															"type": "string"
-														}
-													}
-												}
-											}
-										}
-									},
-									"schema:dateCreated": {
-										"type": "string"
-									},
-									"schema:material": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1value": {
-													"type": "string"
-												},
-												"1lang": {
-													"type": "string"
-												}
-											}
-										}
-									},
-									"schema:isPartOf": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1type": {
-													"type": "string"
-												},
-												"schema:maintainer": {
-													"type": "array",
-													"items": {
-														"type": "object",
-														"properties": {
-															"1type": {
-																"type": "string"
-															},
-															"schema:name": {
-																"type": "array",
-																"items": {
-																	"type": "object",
-																	"properties": {
-																		"1value": {
-																			"type": "string"
-																		},
-																		"1lang": {
-																			"type": "string"
-																		}
-																	}
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									},
-									"dct:provenance": {
-										"type": "array",
-										"items": {
-											"type": "object",
-											"properties": {
-												"1value": {
-													"type": "string"
-												},
-												"1lang": {
-													"type": "string"
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/rawCSVpaths')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageRaw",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "github_csv_file_paths.json",
-						"container": "misc"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"BaseURL": {
-							"type": "string"
-						},
-						"RelativeURL": {
-							"type": "string"
-						},
-						"FileName": {
-							"type": "string"
-						}
-					}
-				}
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
