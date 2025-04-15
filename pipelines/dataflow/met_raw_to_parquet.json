@@ -9,7 +9,7 @@
 						"referenceName": "met_raw",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "metRaw"
 				}
 			],
 			"sinks": [],
@@ -18,7 +18,7 @@
 					"name": "select1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "productionRaw"
 				}
 			],
 			"scriptLines": [
@@ -80,8 +80,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 select(mapColumn(",
+				"     ignoreNoFilesFound: false) ~> metRaw",
+				"metRaw select(mapColumn(",
 				"          object_id = {Object ID},",
 				"          title = Title,",
 				"          inventoryNumber = {Object Number},",
@@ -103,7 +103,9 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 derive(production_raw = coalesce({Object End Date}, {Object Begin Date}),",
-				"          column1 = ERROR_FUNCTION('')) ~> derivedColumn1"
+				"          medium_arr = split(Medium, ','),",
+				"          dim_europe = split(split(Dimensions, '(')[2], ')')[1],",
+				"          dimension_unit = split(split(split(Dimensions, '(')[2], ')')[1], ' ')) ~> productionRaw"
 			]
 		}
 	}
