@@ -120,9 +120,7 @@
 				"          Museum = \"MET\",",
 				"          object_id = toInteger(object_id)) ~> productionRaw",
 				"productionRaw derive(dimension_unit = regexReplace(replace(dim_europe, 'x', ' '), '[^A-Za-z]+', ' '),",
-				"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')",
-				"",
-				") ~> derivedColumn1",
+				"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
 				"          object_id,",
 				"          title,",
@@ -146,6 +144,7 @@
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> MET"
 			]
