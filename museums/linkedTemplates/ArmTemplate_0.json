@@ -1077,32 +1077,28 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/met_raw')]",
+			"name": "[concat(parameters('factoryName'), '/met_parquet')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "BlobStorageRaw",
+					"referenceName": "BlobStorageStandardized",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "met_artworks.csv",
-						"folderPath": "open access",
-						"container": "raw"
+						"folderPath": "met",
+						"container": "standardized"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"compressionCodec": "snappy"
 				},
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageRaw')]"
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageStandardized')]"
 			]
 		}
 	]

@@ -45,6 +45,64 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ingest_all_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ingest_museums_csv",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "ingest_museums_csv",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "ingest_museums_json",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "ingest_museums_csv",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "ingest_museums_json",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/ingest_museums_csv')]",
+				"[concat(variables('factoryId'), '/pipelines/ingest_museums_json')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ingest_museums_csv')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1366,6 +1424,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/met_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BlobStorageStandardized",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "met",
+						"container": "standardized"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BlobStorageStandardized')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/met_raw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2405,7 +2488,8 @@
 						"          responsibleOrganisation,",
 						"          title,",
 						"          yearFrom,",
-						"          yearTo",
+						"          yearTo,",
+						"          medium_classification = classifications[1].en",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectBasicCols",
@@ -2427,7 +2511,9 @@
 						"          birthDate = people.birthDate,",
 						"          birthYear = people.birthYear,",
 						"          deathDate = people.deathDate,",
-						"          deathYear = people.deathYear",
+						"          deathYear = people.deathYear,",
+						"          artist_country_raw = people.birthPlace,",
+						"          medium_classification_raw = medium_classification",
 						"     ),",
 						"     skipDuplicateMapInputs: false,",
 						"     skipDuplicateMapOutputs: false) ~> flattenArtist",
@@ -2521,70 +2607,90 @@
 						"          artist_id,",
 						"          Artist_name,",
 						"          artist_birth_raw,",
-						"          artist_death_raw",
+						"          artist_death_raw,",
+						"          artist_country_raw,",
+						"          medium_classification_raw",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectRaw",
-						"split1@ateneum derive(Museum_name = \"Ateneum\") ~> addMuseumName",
+						"split1@ateneum derive(museum_name = \"Ateneum\",",
+						"          museum_id = 1,",
+						"          artist_group = \"unknown\",",
+						"          artist_gender = \"unknown\") ~> addMuseumName",
 						"addMuseumName select(mapColumn(",
 						"          object_id = split1@ateneum@objectId,",
 						"          title,",
-						"          inventoryNumber,",
+						"          inventory_n = inventoryNumber,",
 						"          production_raw,",
 						"          acquisition_raw,",
-						"          acquisition_method,",
+						"          acquisition_method_raw = acquisition_method,",
 						"          artist_id,",
-						"          Artist_name,",
+						"          artist_name = Artist_name,",
 						"          artist_birth_raw,",
 						"          artist_death_raw,",
+						"          artist_country_raw,",
+						"          artist_group,",
+						"          artist_gender,",
 						"          dimension_unit,",
 						"          measurement_value1,",
 						"          measurement_value2,",
 						"          measurement_value3,",
 						"          measurement_value4,",
+						"          medium_classification_raw,",
 						"          medium1,",
 						"          medium2,",
 						"          medium3,",
 						"          medium4,",
 						"          medium5,",
-						"          Museum_name",
+						"          museum_id,",
+						"          museum_name",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectFinal",
-						"split1@kiasma derive(Museum_name = \"Kiasma\") ~> addMuseumName2",
+						"split1@kiasma derive(museum_name = \"Kiasma\",",
+						"          museum_id = 2,",
+						"          artist_group = \"unknown\",",
+						"          artist_gender = \"unknown\") ~> addMuseumName2",
 						"addMuseumName2 select(mapColumn(",
 						"          object_id = split1@kiasma@objectId,",
 						"          title,",
-						"          inventoryNumber,",
+						"          inventory_n = inventoryNumber,",
 						"          production_raw,",
 						"          acquisition_raw,",
-						"          acquisition_method,",
+						"          acquisition_method_raw = acquisition_method,",
 						"          artist_id,",
-						"          Artist_name,",
+						"          artist_name = Artist_name,",
 						"          artist_birth_raw,",
 						"          artist_death_raw,",
+						"          artist_country_raw,",
+						"          artist_group,",
+						"          artist_gender,",
 						"          dimension_unit,",
 						"          measurement_value1,",
 						"          measurement_value2,",
 						"          measurement_value3,",
 						"          measurement_value4,",
+						"          medium_classification_raw,",
 						"          medium1,",
 						"          medium2,",
 						"          medium3,",
 						"          medium4,",
 						"          medium5,",
-						"          Museum_name",
+						"          museum_id,",
+						"          museum_name",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> selectFinal2",
 						"selectFinal sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
+						"     truncate: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> Ateneum",
 						"selectFinal2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
+						"     truncate: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> Kiasma"
 					]
@@ -2720,9 +2826,7 @@
 						"          Museum = \"MET\",",
 						"          object_id = toInteger(object_id)) ~> productionRaw",
 						"productionRaw derive(dimension_unit = regexReplace(replace(dim_europe, 'x', ' '), '[^A-Za-z]+', ' '),",
-						"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')",
-						"",
-						") ~> derivedColumn1",
+						"          measurement_value1 = replace(replace(dim_europe, 'x', ''), 'cm', '')) ~> derivedColumn1",
 						"derivedColumn1 select(mapColumn(",
 						"          object_id,",
 						"          title,",
@@ -2746,6 +2850,7 @@
 						"select2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
+						"     truncate: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> MET"
 					]
@@ -3015,6 +3120,7 @@
 						"select1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
+						"     truncate: true,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> SMK"
 					]
@@ -3024,31 +3130,6 @@
 				"[concat(variables('factoryId'), '/datasets/smk_artists')]",
 				"[concat(variables('factoryId'), '/datasets/smk_artworks')]",
 				"[concat(variables('factoryId'), '/datasets/SMK_standardized_parquet')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/met_parquet')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BlobStorageStandardized",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "met",
-						"container": "standardized"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BlobStorageStandardized')]"
 			]
 		}
 	]
