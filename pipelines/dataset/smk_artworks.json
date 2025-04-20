@@ -10,8 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "smk_artworks.json",
-				"folderPath": "api",
+				"fileName": "smk_all_da.json",
+				"folderPath": "scraped",
 				"container": "raw"
 			}
 		},
