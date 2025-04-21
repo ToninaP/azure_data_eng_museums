@@ -139,7 +139,7 @@
 				"          artist_birth_raw,",
 				"          artist_death_raw,",
 				"          artist_gender,",
-				"          artist_country,",
+				"          artist_country_raw = artist_country,",
 				"          artist_group,",
 				"          dimension_unit,",
 				"          measurement_value1,",
