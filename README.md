@@ -5,11 +5,11 @@ Requirements: a research project does not have a data storage solution due to lo
 
 The project diagram is stored here https://azurediagrams.com/XwuHo1bY
 
-Data processing diagram:
+**Data processing diagram:**
 
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/data_prossessing.png)
 
-Ingestion of data:
+**Ingestion of data:**
 
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/ingestion_pipeline.png)
 
@@ -19,9 +19,9 @@ Ingestion of data:
 
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/csv_pipeline.png)
 
-Data standardization:
+**Data standardization:**
 
-2. Using Azure Data Factory every dataset goes through individual trransformations and has the same schema in the output.
+2. Using Azure Data Factory every dataset goes through individual transformations and has the same schema in the output.
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/standardization_pipelline.png)
 - some transformations are complext and require multiple flattening, joins, and creating new derived columns
  ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/complex_data_flow.png) 
@@ -29,9 +29,19 @@ Data standardization:
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/simple_data_flow.png)
 
 All the files are stored in a Parquet format in a Standardized Layer of the datalake
- 
 
-Database schema:
+**Dimensional data modelling**
+
+3. Using Azure Databricks loop over standardized dataframes to normalize tables according to the database schema. Saving tables in Databricks unity catalogue for connecting with the analytic and visualization solution
+
+Notebook used for the job: https://github.com/ToninaP/azure_data_eng_museums/blob/main/etl/data_transformation.ipynb
+
+**Database schema:**
 
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/star_schema.svg)
+
+**Analysis and Visualization**
+
+The last step is to look at data. This solution used Tableau; the example dashboard with data might be seen here: 
+https://public.tableau.com/app/profile/antonina.korepanova/viz/databricks_museums/Dashboard1?publish=yes
 
