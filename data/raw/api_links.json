@@ -6,12 +6,12 @@
     },
     {
         "BaseURL" : "https://api.smk.dk/api/v1",
-        "RelativeURL" : "art/search/?keys=*&lang=en",
+        "RelativeURL" : "art/search/?keys=*&offset=0&rows=2000&lang=en",
         "FileName" : "smk_artworks.json"
     },
     {
         "BaseURL" : "https://api.smk.dk/api/v1",
-        "RelativeURL" : "person/search/?keys=*&lang=en",
+        "RelativeURL" : "person/search/?keys=*&offset=0&rows=2000&lang=en",
         "FileName" : "smk_artists.json"
     }
 ]
