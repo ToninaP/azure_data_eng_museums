@@ -1,13 +1,47 @@
 # azure_data_eng_museums
-this is a personal project to showcase my data engineering skills
+
+this is a personal project to create a cloud data storage, analysis and visualisation solution. In this pilot projest only 3 datasets are processed; the final version will include 40+ datasets.
+Requirements: a research project does not have a data storage solution due to low capabilities on premises (the university does not have a unified server storing all data involved in all labs; the research project does not have an engineer to create a data validation and storage solution). A cloud solution is required for international collaboration with the minimal cost involved.
 
 The project diagram is stored here https://azurediagrams.com/XwuHo1bY
 
-Ingestion of data:
+**Data processing diagram:**
 
-![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/Screenshot%202025-04-04%20at%2022.01.56.png)
+![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/data_prossessing.png)
 
-Database schema:
+**Ingestion of data:**
+
+![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/ingestion_pipeline.png)
+
+1. Fetching raw data with Azure Data Factory pipelines and saving it to the Raw layer of the datalake.
+   - first pipeline is looping over csv sources (files stored on GitHub)
+   - second pipeline is looping over json sources (files rerceived as API requests)
+
+![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/csv_pipeline.png)
+
+**Data standardization:**
+
+2. Using Azure Data Factory every dataset goes through individual transformations and has the same schema in the output.
+![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/standardization_pipelline.png)
+- some transformations are complext and require multiple flattening, joins, and creating new derived columns
+ ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/complex_data_flow.png) 
+- other transformations are straightforward and require selecting, renaming and type casting for columns
+![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/simple_data_flow.png)
+
+All the files are stored in a Parquet format in a Standardized Layer of the datalake
+
+**Dimensional data modelling**
+
+3. Using Azure Databricks loop over standardized dataframes to normalize tables according to the database schema. Saving tables in Databricks unity catalogue for connecting with the analytic and visualization solution
+
+Notebook used for the job: https://github.com/ToninaP/azure_data_eng_museums/blob/main/etl/data_transformation.ipynb
+
+**Database schema:**
 
 ![alt text](https://github.com/ToninaP/azure_data_eng_museums/blob/main/docs/graphs/star_schema.svg)
+
+**Analysis and Visualization**
+
+The last step is to look at data. This solution used Tableau; the example dashboard with data might be seen here: 
+https://public.tableau.com/app/profile/antonina.korepanova/viz/databricks_museums/Dashboard1?publish=yes
 
